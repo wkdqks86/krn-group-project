@@ -1,0 +1,588 @@
+{
+  "question_version": "0.1.0",
+  "engine_version": "0.1.0",
+  "likert_labels": ["전혀 아니다", "아니다", "보통이다", "그렇다", "매우 그렇다"],
+  "notes": "v0.1 팀 작성 초안. 저작권 있는 검사지 문항을 복제하지 않는다. 핵심역량은 기본 1문항이고, 적합도 가중치가 큰 문제해결·논리만 2문항이다. 총 28문항.",
+  "questions": [
+    {
+      "question_id": "R1",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "R",
+      "required": true,
+      "prompt": "도구·장비·소프트웨어를 직접 다루며 결과물을 만드는 일을 좋아한다."
+    },
+    {
+      "question_id": "R2",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "R",
+      "required": true,
+      "prompt": "추상적인 논의보다, 손으로 만지거나 실제로 작동하는 것을 확인하는 편이 편하다."
+    },
+    {
+      "question_id": "I1",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "I",
+      "required": true,
+      "prompt": "새로운 자료·원리를 파고들어 원인을 찾는 활동을 좋아한다."
+    },
+    {
+      "question_id": "I2",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "I",
+      "required": true,
+      "prompt": "모르는 개념이 나오면 바로 쓰기보다, 먼저 왜 그런지 이해하고 싶다."
+    },
+    {
+      "question_id": "A1",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "A",
+      "required": true,
+      "prompt": "정해진 형식보다, 새로운 표현이나 구성을 직접 만들어 보는 일이 끌린다."
+    },
+    {
+      "question_id": "A2",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "A",
+      "required": true,
+      "prompt": "시각·문장·영상처럼 감각이 드러나는 결과물을 다듬는 시간이 즐겁다."
+    },
+    {
+      "question_id": "S1",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "S",
+      "required": true,
+      "prompt": "다른 사람이 성장하거나 문제를 풀도록 돕는 역할이 잘 맞는다."
+    },
+    {
+      "question_id": "S2",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "S",
+      "required": true,
+      "prompt": "혼자 결과물을 완성하는 것보다, 사람과 대화하며 방향을 잡는 일이 더 에너지가 난다."
+    },
+    {
+      "question_id": "E1",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "E",
+      "required": true,
+      "prompt": "목표를 정하고 사람을 설득해 일을 앞으로 밀어 가는 상황을 선호한다."
+    },
+    {
+      "question_id": "E2",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "E",
+      "required": true,
+      "prompt": "경쟁이나 성과 목표가 있을 때 더 집중이 잘 된다."
+    },
+    {
+      "question_id": "C1",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "C",
+      "required": true,
+      "prompt": "규칙·절차·기록을 맞춰 가며 일을 정리하는 편이 마음이 놓인다."
+    },
+    {
+      "question_id": "C2",
+      "module": "riasec",
+      "type": "likert",
+      "axis": "C",
+      "required": true,
+      "prompt": "큰 그림을 새로 그리는 일보다, 이미 있는 체계를 정확하게 운영하는 일이 맞다."
+    },
+    {
+      "question_id": "PS1",
+      "module": "competency",
+      "type": "likert",
+      "axis": "problem_solving",
+      "required": true,
+      "prompt": "막힌 문제를 만나면, 원인을 여러 갈래로 나눠 하나씩 확인해 본다."
+    },
+    {
+      "question_id": "PS2",
+      "module": "competency",
+      "type": "likert",
+      "axis": "problem_solving",
+      "required": true,
+      "prompt": "정답이 바로 보이지 않아도, 가설을 세우고 검증하는 과정을 버틸 수 있다."
+    },
+    {
+      "question_id": "LOG1",
+      "module": "competency",
+      "type": "likert",
+      "axis": "logical",
+      "required": true,
+      "prompt": "복잡한 정보를 만났을 때, 구조를 쪼개어 순서를 정할 수 있다."
+    },
+    {
+      "question_id": "LOG2",
+      "module": "competency",
+      "type": "likert",
+      "axis": "logical",
+      "required": true,
+      "prompt": "감정보다 근거와 조건을 먼저 확인하고 판단을 내린다."
+    },
+    {
+      "question_id": "COL1",
+      "module": "competency",
+      "type": "likert",
+      "axis": "collaboration",
+      "required": true,
+      "prompt": "역할이 겹치거나 의견이 달라도, 팀 목표를 기준으로 조율하려고 한다."
+    },
+    {
+      "question_id": "COM1",
+      "module": "competency",
+      "type": "likert",
+      "axis": "communication",
+      "required": true,
+      "prompt": "복잡한 내용을 상대가 이해할 수 있게 풀어 설명하는 편이다."
+    },
+    {
+      "question_id": "PER1",
+      "module": "competency",
+      "type": "likert",
+      "axis": "persistence",
+      "required": true,
+      "prompt": "반복적으로 고치고 확인해야 하는 일도, 기준에 맞을 때까지 이어 간다."
+    },
+    {
+      "question_id": "SM1",
+      "module": "competency",
+      "type": "likert",
+      "axis": "self_management_execution",
+      "required": true,
+      "prompt": "마감과 우선순위를 스스로 나눠, 오늘 할 일까지 내려놓는 편이다."
+    },
+    {
+      "question_id": "SJT1",
+      "module": "sjt_common",
+      "type": "sjt",
+      "required": true,
+      "prompt": "한 서비스의 이탈률이 높습니다. 먼저 다뤄 보고 싶은 문제는?",
+      "options": [
+        {
+          "option_id": "SJT1_A",
+          "label": "데이터에서 이탈 구간과 원인을 찾기",
+          "primary": "I",
+          "secondary": "logical",
+          "cluster": "analyze"
+        },
+        {
+          "option_id": "SJT1_B",
+          "label": "사용자 인터뷰로 불편한 지점을 찾기",
+          "primary": "A",
+          "secondary": "communication",
+          "cluster": "craft"
+        },
+        {
+          "option_id": "SJT1_C",
+          "label": "팀과 실행 계획을 먼저 정리하기",
+          "primary": "E",
+          "secondary": "collaboration",
+          "cluster": "execute"
+        },
+        {
+          "option_id": "SJT1_D",
+          "label": "고객에게 당장 가능한 해결책을 설명하기",
+          "primary": "S",
+          "secondary": "communication",
+          "cluster": "people"
+        }
+      ]
+    },
+    {
+      "question_id": "SJT2",
+      "module": "sjt_common",
+      "type": "sjt",
+      "required": true,
+      "prompt": "프로젝트 일정이 밀립니다. 첫 행동은?",
+      "options": [
+        {
+          "option_id": "SJT2_A",
+          "label": "원인 데이터를 확인한다",
+          "primary": "logical",
+          "secondary": "problem_solving",
+          "cluster": "analyze"
+        },
+        {
+          "option_id": "SJT2_B",
+          "label": "역할을 재조정한다",
+          "primary": "collaboration",
+          "secondary": "E",
+          "cluster": "execute"
+        },
+        {
+          "option_id": "SJT2_C",
+          "label": "이해관계자에게 현황을 공유한다",
+          "primary": "communication",
+          "secondary": "S",
+          "cluster": "people"
+        },
+        {
+          "option_id": "SJT2_D",
+          "label": "범위를 줄여 마감 가능한 형태로 만든다",
+          "primary": "self_management_execution",
+          "secondary": "C",
+          "cluster": "execute"
+        }
+      ]
+    },
+    {
+      "question_id": "SJT3",
+      "module": "sjt_common",
+      "type": "sjt",
+      "required": true,
+      "prompt": "새 과제가 주어졌습니다. 가장 먼저 하고 싶은 일은?",
+      "options": [
+        {
+          "option_id": "SJT3_A",
+          "label": "관련 자료와 기존 사례를 조사한다",
+          "primary": "I",
+          "secondary": "persistence",
+          "cluster": "analyze"
+        },
+        {
+          "option_id": "SJT3_B",
+          "label": "시안이나 프로토타입을 빠르게 만들어 본다",
+          "primary": "A",
+          "secondary": "R",
+          "cluster": "craft"
+        },
+        {
+          "option_id": "SJT3_C",
+          "label": "관계자와 목표·역할을 맞춰 본다",
+          "primary": "S",
+          "secondary": "collaboration",
+          "cluster": "people"
+        },
+        {
+          "option_id": "SJT3_D",
+          "label": "일정표와 체크리스트를 먼저 만든다",
+          "primary": "C",
+          "secondary": "self_management_execution",
+          "cluster": "execute"
+        }
+      ]
+    },
+    {
+      "question_id": "SJT4",
+      "module": "sjt_common",
+      "type": "sjt",
+      "required": true,
+      "prompt": "팀 안에서 우선순위가 갈립니다. 당신은 주로 어떤 역할을 맡나요?",
+      "options": [
+        {
+          "option_id": "SJT4_A",
+          "label": "근거를 모아 선택지를 비교한다",
+          "primary": "logical",
+          "secondary": "I",
+          "cluster": "analyze"
+        },
+        {
+          "option_id": "SJT4_B",
+          "label": "서로의 우려를 듣고 합의점을 찾는다",
+          "primary": "collaboration",
+          "secondary": "communication",
+          "cluster": "people"
+        },
+        {
+          "option_id": "SJT4_C",
+          "label": "실험할 수 있는 작은 안을 제안한다",
+          "primary": "problem_solving",
+          "secondary": "A",
+          "cluster": "craft"
+        },
+        {
+          "option_id": "SJT4_D",
+          "label": "결정된 일을 실행 단위로 쪼개 추진한다",
+          "primary": "self_management_execution",
+          "secondary": "E",
+          "cluster": "execute"
+        }
+      ]
+    },
+    {
+      "question_id": "FU_ANALYZE_1",
+      "module": "sjt_followup",
+      "type": "sjt",
+      "cluster": "analyze",
+      "required": true,
+      "prompt": "원인을 찾은 다음, 어떤 방식으로 확신을 높이겠습니까?",
+      "options": [
+        {
+          "option_id": "FU_ANALYZE_1_A",
+          "label": "추가 지표를 나눠 가설을 검증한다",
+          "primary": "I",
+          "secondary": "logical"
+        },
+        {
+          "option_id": "FU_ANALYZE_1_B",
+          "label": "작은 실험으로 효과가 있는지 본다",
+          "primary": "problem_solving",
+          "secondary": "persistence"
+        },
+        {
+          "option_id": "FU_ANALYZE_1_C",
+          "label": "도메인 담당자에게 해석을 교차 확인한다",
+          "primary": "collaboration",
+          "secondary": "communication"
+        },
+        {
+          "option_id": "FU_ANALYZE_1_D",
+          "label": "재현 가능한 분석 절차를 문서화한다",
+          "primary": "C",
+          "secondary": "self_management_execution"
+        }
+      ]
+    },
+    {
+      "question_id": "FU_ANALYZE_2",
+      "module": "sjt_followup",
+      "type": "sjt",
+      "cluster": "analyze",
+      "required": true,
+      "prompt": "정보가 부족할 때 당신의 기본 태도는?",
+      "options": [
+        {
+          "option_id": "FU_ANALYZE_2_A",
+          "label": "알 수 있는 범위와 모르는 범위를 먼저 적는다",
+          "primary": "logical",
+          "secondary": "problem_solving"
+        },
+        {
+          "option_id": "FU_ANALYZE_2_B",
+          "label": "비슷한 사례를 더 찾아본다",
+          "primary": "I",
+          "secondary": "persistence"
+        },
+        {
+          "option_id": "FU_ANALYZE_2_C",
+          "label": "현장 담당자에게 바로 물어본다",
+          "primary": "S",
+          "secondary": "communication"
+        },
+        {
+          "option_id": "FU_ANALYZE_2_D",
+          "label": "일단 최소 가정으로 초안을 만든다",
+          "primary": "self_management_execution",
+          "secondary": "E"
+        }
+      ]
+    },
+    {
+      "question_id": "FU_PEOPLE_1",
+      "module": "sjt_followup",
+      "type": "sjt",
+      "cluster": "people",
+      "required": true,
+      "prompt": "상대가 아직 확신이 없을 때, 당신은 주로 무엇을 하나요?",
+      "options": [
+        {
+          "option_id": "FU_PEOPLE_1_A",
+          "label": "상대의 상황을 먼저 듣고 언어를 맞춘다",
+          "primary": "S",
+          "secondary": "communication"
+        },
+        {
+          "option_id": "FU_PEOPLE_1_B",
+          "label": "선택지와 장단점을 비교해 정리해 준다",
+          "primary": "logical",
+          "secondary": "communication"
+        },
+        {
+          "option_id": "FU_PEOPLE_1_C",
+          "label": "함께 할 다음 행동을 구체적으로 제안한다",
+          "primary": "E",
+          "secondary": "self_management_execution"
+        },
+        {
+          "option_id": "FU_PEOPLE_1_D",
+          "label": "자료나 예시로 이해를 돕는다",
+          "primary": "A",
+          "secondary": "collaboration"
+        }
+      ]
+    },
+    {
+      "question_id": "FU_PEOPLE_2",
+      "module": "sjt_followup",
+      "type": "sjt",
+      "cluster": "people",
+      "required": true,
+      "prompt": "갈등 상황에서 당신이 가장 신경 쓰는 것은?",
+      "options": [
+        {
+          "option_id": "FU_PEOPLE_2_A",
+          "label": "관계가 끊기지 않게 대화를 유지하는 것",
+          "primary": "S",
+          "secondary": "collaboration"
+        },
+        {
+          "option_id": "FU_PEOPLE_2_B",
+          "label": "사실과 오해를 구분해 공유하는 것",
+          "primary": "communication",
+          "secondary": "logical"
+        },
+        {
+          "option_id": "FU_PEOPLE_2_C",
+          "label": "다음에 같은 갈등이 없도록 규칙을 남기는 것",
+          "primary": "C",
+          "secondary": "self_management_execution"
+        },
+        {
+          "option_id": "FU_PEOPLE_2_D",
+          "label": "당장 움직일 수 있는 합의안을 만드는 것",
+          "primary": "E",
+          "secondary": "problem_solving"
+        }
+      ]
+    },
+    {
+      "question_id": "FU_EXECUTE_1",
+      "module": "sjt_followup",
+      "type": "sjt",
+      "cluster": "execute",
+      "required": true,
+      "prompt": "해야 할 일이 많을 때 우선순위를 어떻게 정하나요?",
+      "options": [
+        {
+          "option_id": "FU_EXECUTE_1_A",
+          "label": "마감과 영향도를 표로 나눠 본다",
+          "primary": "C",
+          "secondary": "logical"
+        },
+        {
+          "option_id": "FU_EXECUTE_1_B",
+          "label": "가장 막힌 사람/업무부터 푼다",
+          "primary": "collaboration",
+          "secondary": "S"
+        },
+        {
+          "option_id": "FU_EXECUTE_1_C",
+          "label": "성과에 바로 연결되는 일부터 밀어 본다",
+          "primary": "E",
+          "secondary": "self_management_execution"
+        },
+        {
+          "option_id": "FU_EXECUTE_1_D",
+          "label": "품질 기준이 흔들리지 않는 일부터 지킨다",
+          "primary": "persistence",
+          "secondary": "C"
+        }
+      ]
+    },
+    {
+      "question_id": "FU_EXECUTE_2",
+      "module": "sjt_followup",
+      "type": "sjt",
+      "cluster": "execute",
+      "required": true,
+      "prompt": "계획이 바뀌었을 때 당신의 기본 반응은?",
+      "options": [
+        {
+          "option_id": "FU_EXECUTE_2_A",
+          "label": "남은 범위와 일정을 다시 쪼갠다",
+          "primary": "self_management_execution",
+          "secondary": "C"
+        },
+        {
+          "option_id": "FU_EXECUTE_2_B",
+          "label": "변경 이유와 영향을 팀에 공유한다",
+          "primary": "communication",
+          "secondary": "collaboration"
+        },
+        {
+          "option_id": "FU_EXECUTE_2_C",
+          "label": "새 목표에 맞게 설득 포인트를 다시 잡는다",
+          "primary": "E",
+          "secondary": "S"
+        },
+        {
+          "option_id": "FU_EXECUTE_2_D",
+          "label": "무엇이 바뀌었는지 데이터로 확인한다",
+          "primary": "logical",
+          "secondary": "I"
+        }
+      ]
+    },
+    {
+      "question_id": "FU_CRAFT_1",
+      "module": "sjt_followup",
+      "type": "sjt",
+      "cluster": "craft",
+      "required": true,
+      "prompt": "아이디어를 구체화할 때 당신은 무엇을 먼저 하나요?",
+      "options": [
+        {
+          "option_id": "FU_CRAFT_1_A",
+          "label": "스케치·초안을 만들어 반응을 본다",
+          "primary": "A",
+          "secondary": "R"
+        },
+        {
+          "option_id": "FU_CRAFT_1_B",
+          "label": "사용자 맥락을 관찰하거나 물어본다",
+          "primary": "S",
+          "secondary": "communication"
+        },
+        {
+          "option_id": "FU_CRAFT_1_C",
+          "label": "제약(시간·도구·규칙)을 먼저 정리한다",
+          "primary": "C",
+          "secondary": "logical"
+        },
+        {
+          "option_id": "FU_CRAFT_1_D",
+          "label": "비슷한 결과물을 분해해 구조를 배운다",
+          "primary": "I",
+          "secondary": "persistence"
+        }
+      ]
+    },
+    {
+      "question_id": "FU_CRAFT_2",
+      "module": "sjt_followup",
+      "type": "sjt",
+      "cluster": "craft",
+      "required": true,
+      "prompt": "완성도를 높일 때 당신이 포기하기 어려운 것은?",
+      "options": [
+        {
+          "option_id": "FU_CRAFT_2_A",
+          "label": "표현이 의도한 느낌과 맞는지",
+          "primary": "A",
+          "secondary": "persistence"
+        },
+        {
+          "option_id": "FU_CRAFT_2_B",
+          "label": "실제로 쓰이거나 작동하는지",
+          "primary": "R",
+          "secondary": "problem_solving"
+        },
+        {
+          "option_id": "FU_CRAFT_2_C",
+          "label": "다른 사람이 오해 없이 이해하는지",
+          "primary": "communication",
+          "secondary": "S"
+        },
+        {
+          "option_id": "FU_CRAFT_2_D",
+          "label": "마감 안에 전달 가능한 버전인지",
+          "primary": "self_management_execution",
+          "secondary": "E"
+        }
+      ]
+    }
+  ]
+}

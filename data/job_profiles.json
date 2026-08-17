@@ -1,0 +1,348 @@
+{
+  "job_profile_version": "0.1.0",
+  "notes": "가중치와 요구값은 과학적 사실이 아니라 MVP 탐색 품질을 위한 팀 초기 가설이다. P2가 워크숍 후 v0.2로 보정한다.",
+  "axes": [
+    "R",
+    "I",
+    "A",
+    "S",
+    "E",
+    "C",
+    "problem_solving",
+    "logical",
+    "collaboration",
+    "communication",
+    "persistence",
+    "self_management_execution"
+  ],
+  "job_families": [
+    {
+      "job_family_id": "J01",
+      "name": "경영·사무·금융",
+      "description": "기획, 인사, 회계·재무처럼 조직의 목표와 자원을 계획하고 운영하는 직군.",
+      "example_occupations": ["경영기획", "인사", "회계·재무"],
+      "requirement_vector": {
+        "R": 40,
+        "I": 50,
+        "A": 30,
+        "S": 55,
+        "E": 65,
+        "C": 85,
+        "problem_solving": 65,
+        "logical": 80,
+        "collaboration": 60,
+        "communication": 70,
+        "persistence": 60,
+        "self_management_execution": 85
+      },
+      "axis_weight": {
+        "R": 0.04,
+        "I": 0.05,
+        "A": 0.03,
+        "S": 0.06,
+        "E": 0.10,
+        "C": 0.16,
+        "problem_solving": 0.08,
+        "logical": 0.16,
+        "collaboration": 0.06,
+        "communication": 0.08,
+        "persistence": 0.04,
+        "self_management_execution": 0.14
+      },
+      "environment_json": {
+        "face_to_face": 3,
+        "team_interaction": 4,
+        "change_speed": 3,
+        "quantitative_work": 4
+      },
+      "rationale": "관습·논리·자기관리 신호가 강한 초기 가설."
+    },
+    {
+      "job_family_id": "J02",
+      "name": "연구·공학기술",
+      "description": "R&D, 기계·전기·화학 엔지니어링처럼 원리와 실험을 바탕으로 기술을 만드는 직군.",
+      "example_occupations": ["R&D", "기계 엔지니어", "전기·전자 엔지니어"],
+      "requirement_vector": {
+        "R": 85,
+        "I": 85,
+        "A": 35,
+        "S": 40,
+        "E": 35,
+        "C": 60,
+        "problem_solving": 85,
+        "logical": 85,
+        "collaboration": 55,
+        "communication": 50,
+        "persistence": 80,
+        "self_management_execution": 70
+      },
+      "axis_weight": {
+        "R": 0.16,
+        "I": 0.16,
+        "A": 0.03,
+        "S": 0.04,
+        "E": 0.03,
+        "C": 0.06,
+        "problem_solving": 0.16,
+        "logical": 0.14,
+        "collaboration": 0.05,
+        "communication": 0.04,
+        "persistence": 0.08,
+        "self_management_execution": 0.05
+      },
+      "environment_json": {
+        "face_to_face": 3,
+        "team_interaction": 3,
+        "change_speed": 3,
+        "quantitative_work": 5
+      },
+      "rationale": "현실·탐구·문제해결·논리 신호가 강한 초기 가설."
+    },
+    {
+      "job_family_id": "J03",
+      "name": "IT·데이터",
+      "description": "개발, 데이터 분석, QA처럼 정보와 시스템을 설계·검증하는 직군.",
+      "example_occupations": ["개발자", "데이터 분석가", "QA"],
+      "requirement_vector": {
+        "R": 60,
+        "I": 85,
+        "A": 35,
+        "S": 45,
+        "E": 40,
+        "C": 65,
+        "problem_solving": 75,
+        "logical": 80,
+        "collaboration": 60,
+        "communication": 60,
+        "persistence": 70,
+        "self_management_execution": 65
+      },
+      "axis_weight": {
+        "R": 0.08,
+        "I": 0.18,
+        "A": 0.04,
+        "S": 0.04,
+        "E": 0.04,
+        "C": 0.08,
+        "problem_solving": 0.16,
+        "logical": 0.18,
+        "collaboration": 0.07,
+        "communication": 0.05,
+        "persistence": 0.05,
+        "self_management_execution": 0.03
+      },
+      "environment_json": {
+        "face_to_face": 2,
+        "team_interaction": 4,
+        "change_speed": 4,
+        "quantitative_work": 5
+      },
+      "rationale": "PRD 부록 A v0.2 예시값을 그대로 사용."
+    },
+    {
+      "job_family_id": "J04",
+      "name": "교육·공공",
+      "description": "교육기획, 직업상담, 행정·공공서비스처럼 사람·제도와 함께 일하는 직군.",
+      "example_occupations": ["교육기획", "직업상담", "행정·공공서비스"],
+      "requirement_vector": {
+        "R": 35,
+        "I": 50,
+        "A": 45,
+        "S": 90,
+        "E": 45,
+        "C": 70,
+        "problem_solving": 55,
+        "logical": 60,
+        "collaboration": 80,
+        "communication": 85,
+        "persistence": 70,
+        "self_management_execution": 70
+      },
+      "axis_weight": {
+        "R": 0.03,
+        "I": 0.05,
+        "A": 0.05,
+        "S": 0.20,
+        "E": 0.05,
+        "C": 0.08,
+        "problem_solving": 0.06,
+        "logical": 0.07,
+        "collaboration": 0.12,
+        "communication": 0.16,
+        "persistence": 0.07,
+        "self_management_execution": 0.06
+      },
+      "environment_json": {
+        "face_to_face": 5,
+        "team_interaction": 4,
+        "change_speed": 2,
+        "quantitative_work": 2
+      },
+      "rationale": "사회·의사소통·협업 신호가 강한 초기 가설."
+    },
+    {
+      "job_family_id": "J05",
+      "name": "보건·의료",
+      "description": "간호, 임상·보건, 의료기술처럼 사람의 건강과 안전을 다루는 직군.",
+      "example_occupations": ["간호", "임상·보건", "의료기술"],
+      "requirement_vector": {
+        "R": 75,
+        "I": 60,
+        "A": 30,
+        "S": 85,
+        "E": 35,
+        "C": 70,
+        "problem_solving": 70,
+        "logical": 65,
+        "collaboration": 80,
+        "communication": 70,
+        "persistence": 85,
+        "self_management_execution": 75
+      },
+      "axis_weight": {
+        "R": 0.10,
+        "I": 0.06,
+        "A": 0.03,
+        "S": 0.16,
+        "E": 0.03,
+        "C": 0.07,
+        "problem_solving": 0.08,
+        "logical": 0.06,
+        "collaboration": 0.12,
+        "communication": 0.08,
+        "persistence": 0.13,
+        "self_management_execution": 0.08
+      },
+      "environment_json": {
+        "face_to_face": 5,
+        "team_interaction": 5,
+        "change_speed": 3,
+        "quantitative_work": 3
+      },
+      "rationale": "사회·현실·지속성·협업 신호가 강한 초기 가설."
+    },
+    {
+      "job_family_id": "J06",
+      "name": "예술·디자인",
+      "description": "UX/UI, 콘텐츠 기획, 영상 편집처럼 감각과 표현을 결합하는 직군.",
+      "example_occupations": ["UX/UI 디자인", "콘텐츠 기획", "영상 편집"],
+      "requirement_vector": {
+        "R": 50,
+        "I": 45,
+        "A": 90,
+        "S": 55,
+        "E": 45,
+        "C": 40,
+        "problem_solving": 65,
+        "logical": 50,
+        "collaboration": 65,
+        "communication": 80,
+        "persistence": 70,
+        "self_management_execution": 60
+      },
+      "axis_weight": {
+        "R": 0.06,
+        "I": 0.05,
+        "A": 0.22,
+        "S": 0.06,
+        "E": 0.05,
+        "C": 0.04,
+        "problem_solving": 0.08,
+        "logical": 0.05,
+        "collaboration": 0.08,
+        "communication": 0.16,
+        "persistence": 0.09,
+        "self_management_execution": 0.06
+      },
+      "environment_json": {
+        "face_to_face": 3,
+        "team_interaction": 4,
+        "change_speed": 4,
+        "quantitative_work": 2
+      },
+      "rationale": "예술·의사소통 신호가 강한 초기 가설. 개방성 맥락은 점수에 넣지 않고 설명에만 사용."
+    },
+    {
+      "job_family_id": "J07",
+      "name": "영업·마케팅",
+      "description": "B2B 영업, 브랜드·퍼포먼스 마케팅처럼 시장과 고객을 설득하고 연결하는 직군.",
+      "example_occupations": ["B2B 영업", "브랜드 마케팅", "퍼포먼스 마케팅"],
+      "requirement_vector": {
+        "R": 35,
+        "I": 50,
+        "A": 55,
+        "S": 80,
+        "E": 90,
+        "C": 50,
+        "problem_solving": 65,
+        "logical": 55,
+        "collaboration": 70,
+        "communication": 85,
+        "persistence": 65,
+        "self_management_execution": 80
+      },
+      "axis_weight": {
+        "R": 0.03,
+        "I": 0.05,
+        "A": 0.07,
+        "S": 0.14,
+        "E": 0.18,
+        "C": 0.04,
+        "problem_solving": 0.07,
+        "logical": 0.05,
+        "collaboration": 0.08,
+        "communication": 0.14,
+        "persistence": 0.05,
+        "self_management_execution": 0.10
+      },
+      "environment_json": {
+        "face_to_face": 4,
+        "team_interaction": 4,
+        "change_speed": 5,
+        "quantitative_work": 4
+      },
+      "rationale": "진취·사회·의사소통·실행 신호가 강한 초기 가설."
+    },
+    {
+      "job_family_id": "J08",
+      "name": "서비스·운영",
+      "description": "고객서비스, 매장·물류, 운영관리처럼 현장과 프로세스를 안정적으로 돌리는 직군.",
+      "example_occupations": ["고객서비스", "매장·물류", "운영관리"],
+      "requirement_vector": {
+        "R": 55,
+        "I": 40,
+        "A": 30,
+        "S": 80,
+        "E": 50,
+        "C": 80,
+        "problem_solving": 55,
+        "logical": 50,
+        "collaboration": 80,
+        "communication": 70,
+        "persistence": 75,
+        "self_management_execution": 85
+      },
+      "axis_weight": {
+        "R": 0.06,
+        "I": 0.04,
+        "A": 0.03,
+        "S": 0.14,
+        "E": 0.06,
+        "C": 0.14,
+        "problem_solving": 0.06,
+        "logical": 0.05,
+        "collaboration": 0.12,
+        "communication": 0.08,
+        "persistence": 0.08,
+        "self_management_execution": 0.14
+      },
+      "environment_json": {
+        "face_to_face": 4,
+        "team_interaction": 5,
+        "change_speed": 3,
+        "quantitative_work": 3
+      },
+      "rationale": "사회·관습·협업·자기관리 신호가 강한 초기 가설."
+    }
+  ]
+}

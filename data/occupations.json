@@ -1,0 +1,319 @@
+{
+  "occupation_version": "0.1.0",
+  "snapshot_date": "2026-08-17",
+  "source_note": "P5가 Work24/공공데이터 스냅샷으로 교체하기 전, 탐색용 연관 직업 초안이다. 채용 자격 판정이 아니다.",
+  "occupations": [
+    {
+      "occupation_id": "O0101",
+      "job_family_id": "J01",
+      "external_code": "",
+      "name": "경영기획 담당자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "조직 목표와 자원을 계획하고 실행 현황을 점검한다.",
+        "typical_tasks": ["사업 계획 수립", "성과 지표 관리", "유관 부서 조율"],
+        "education_hint": "학사 이상이 많은 편이나 공고마다 다름",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0102",
+      "job_family_id": "J01",
+      "external_code": "",
+      "name": "인사 담당자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "채용·평가·조직문화 등 사람과 제도를 운영한다.",
+        "typical_tasks": ["채용 운영", "인사 제도 관리", "구성원 상담"],
+        "education_hint": "전공보다 실무 경험·커뮤니케이션이 자주 강조됨",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0103",
+      "job_family_id": "J01",
+      "external_code": "",
+      "name": "회계·재무 담당자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "자금·장부·보고서를 기준으로 재무 정보를 관리한다.",
+        "typical_tasks": ["전표·결산", "예산 관리", "재무 보고"],
+        "education_hint": "상경 계열 선호가 있을 수 있으나 공고 원문 확인 필요",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0201",
+      "job_family_id": "J02",
+      "external_code": "",
+      "name": "연구원(R&D)",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "가설을 세우고 실험·분석으로 기술 문제를 푼다.",
+        "typical_tasks": ["실험 설계", "데이터 해석", "기술 문서 작성"],
+        "education_hint": "석사 이상이 요구되는 공고가 있을 수 있음",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0202",
+      "job_family_id": "J02",
+      "external_code": "",
+      "name": "기계 엔지니어",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "기계 시스템 설계·해석·개선을 담당한다.",
+        "typical_tasks": ["설계", "시험", "현장 이슈 대응"],
+        "education_hint": "공학 전공이 자주 언급됨",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0203",
+      "job_family_id": "J02",
+      "external_code": "",
+      "name": "전기·전자 엔지니어",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "전기·전자 회로와 시스템을 설계하고 검증한다.",
+        "typical_tasks": ["회로 설계", "테스트", "규격 대응"],
+        "education_hint": "관련 전공·자격 요구가 공고마다 다름",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0301",
+      "job_family_id": "J03",
+      "external_code": "",
+      "name": "소프트웨어 개발자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "요구사항을 코드와 시스템으로 구현하고 유지한다.",
+        "typical_tasks": ["기능 구현", "코드 리뷰", "장애 대응"],
+        "education_hint": "전공 무관 공고와 전공 요구 공고가 혼재",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0302",
+      "job_family_id": "J03",
+      "external_code": "",
+      "name": "데이터 분석가",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "데이터를 정리·분석해 의사결정에 쓸 근거를 만든다.",
+        "typical_tasks": ["지표 설계", "분석", "인사이트 전달"],
+        "education_hint": "통계·컴퓨터 관련 경험이 자주 언급됨",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0303",
+      "job_family_id": "J03",
+      "external_code": "",
+      "name": "QA 엔지니어",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "제품이 기대한 품질 기준을 만족하는지 검증한다.",
+        "typical_tasks": ["테스트 설계", "결함 보고", "회귀 검증"],
+        "education_hint": "전공보다 도메인 이해·꼼꼼함이 강조되는 경우 있음",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0401",
+      "job_family_id": "J04",
+      "external_code": "",
+      "name": "교육기획 담당자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "학습 목표에 맞는 프로그램과 운영 방식을 설계한다.",
+        "typical_tasks": ["커리큘럼 기획", "운영 조율", "효과 점검"],
+        "education_hint": "교육학 전공이 우대될 수 있으나 필수와는 다름",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0402",
+      "job_family_id": "J04",
+      "external_code": "",
+      "name": "직업상담사",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "진로·취업 정보를 바탕으로 탐색을 돕는다.",
+        "typical_tasks": ["상담", "정보 안내", "프로그램 운영"],
+        "education_hint": "관련 자격 요구가 있을 수 있음. 공고 원문 확인",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0403",
+      "job_family_id": "J04",
+      "external_code": "",
+      "name": "행정 사무원",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "공공·기관의 문서·민원·운영 절차를 처리한다.",
+        "typical_tasks": ["문서 처리", "민원 응대", "규정 확인"],
+        "education_hint": "학력 요건은 기관·공고마다 다름",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0501",
+      "job_family_id": "J05",
+      "external_code": "",
+      "name": "간호사",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "환자 상태 관찰과 간호 업무를 수행한다.",
+        "typical_tasks": ["간호 실무", "기록", "팀 협업"],
+        "education_hint": "면허·자격이 필요한 직업. 이 앱은 자격 판정을 하지 않음",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0502",
+      "job_family_id": "J05",
+      "external_code": "",
+      "name": "보건의료정보관리사",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "의료 정보를 분류·관리하고 활용 가능하게 만든다.",
+        "typical_tasks": ["기록 관리", "분류", "통계 지원"],
+        "education_hint": "관련 자격 요구가 있을 수 있음",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0503",
+      "job_family_id": "J05",
+      "external_code": "",
+      "name": "임상병리사",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "검체를 분석해 진단에 필요한 정보를 만든다.",
+        "typical_tasks": ["검사", "정도 관리", "결과 보고"],
+        "education_hint": "면허·자격이 필요한 직업. 공고 원문 확인",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0601",
+      "job_family_id": "J06",
+      "external_code": "",
+      "name": "UX/UI 디자이너",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "사용자가 서비스를 이해하고 쓰도록 화면과 흐름을 설계한다.",
+        "typical_tasks": ["리서치", "와이어프레임", "프로토타입"],
+        "education_hint": "포트폴리오가 학력보다 중요한 경우가 많음",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0602",
+      "job_family_id": "J06",
+      "external_code": "",
+      "name": "콘텐츠 기획자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "메시지와 형식을 정해 콘텐츠를 기획·운영한다.",
+        "typical_tasks": ["기획안 작성", "제작 조율", "성과 점검"],
+        "education_hint": "전공 무관인 공고가 많음",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0603",
+      "job_family_id": "J06",
+      "external_code": "",
+      "name": "영상 편집자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "촬영본을 이야기와 리듬에 맞게 편집한다.",
+        "typical_tasks": ["컷 편집", "자막·색보정", "납품"],
+        "education_hint": "도구 숙련과 포트폴리오가 자주 요구됨",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0701",
+      "job_family_id": "J07",
+      "external_code": "",
+      "name": "B2B 영업 담당자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "기업 고객의 필요를 파악하고 제안·계약을 진행한다.",
+        "typical_tasks": ["고객 미팅", "제안서", "계약 관리"],
+        "education_hint": "전공보다 소통·목표 관리가 강조되는 편",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0702",
+      "job_family_id": "J07",
+      "external_code": "",
+      "name": "브랜드 마케터",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "브랜드가 전달할 메시지와 접점을 기획한다.",
+        "typical_tasks": ["캠페인 기획", "콘텐츠 방향", "성과 리뷰"],
+        "education_hint": "관련 경험·포트폴리오가 학력보다 중요할 수 있음",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0703",
+      "job_family_id": "J07",
+      "external_code": "",
+      "name": "퍼포먼스 마케터",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "광고·채널 실험을 통해 성과 지표를 개선한다.",
+        "typical_tasks": ["매체 운영", "A/B 테스트", "리포팅"],
+        "education_hint": "숫자 해석 경험이 자주 언급됨",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0801",
+      "job_family_id": "J08",
+      "external_code": "",
+      "name": "고객서비스 담당자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "문의·불만을 듣고 절차에 따라 문제를 해결한다.",
+        "typical_tasks": ["상담", "이슈 기록", "유관 부서 전달"],
+        "education_hint": "학력보다 응대 경험·태도가 강조되는 경우 많음",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0802",
+      "job_family_id": "J08",
+      "external_code": "",
+      "name": "물류 운영 담당자",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "입고·출고·재고가 일정대로 흐르도록 현장을 운영한다.",
+        "typical_tasks": ["일정 관리", "이슈 대응", "협력사 조율"],
+        "education_hint": "현장 경험 우대가 있을 수 있음",
+        "source": "팀 검수 스냅샷"
+      }
+    },
+    {
+      "occupation_id": "O0803",
+      "job_family_id": "J08",
+      "external_code": "",
+      "name": "운영 매니저",
+      "source_url": "https://www.work.go.kr/",
+      "snapshot_json": {
+        "summary": "서비스가 매일 같은 품질로 돌아가도록 프로세스와 인력을 관리한다.",
+        "typical_tasks": ["운영 지표 관리", "인력 배치", "개선 과제"],
+        "education_hint": "전공 무관인 경우가 많음",
+        "source": "팀 검수 스냅샷"
+      }
+    }
+  ]
+}
