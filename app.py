@@ -16,10 +16,7 @@ from services.explainer import explain_recommendation
 from services.work24 import job_family_detail
 
 ROOT = Path(__file__).resolve().parent
-DISCLAIMER = (
-    "이 결과는 취업 성공 가능성이나 능력을 판정하지 않습니다. "
-    "현재 입력한 프로파일과 각 직군의 초기 요구 프로파일 사이의 상대적 적합도를 보여주는 탐색 가이드입니다."
-)
+# DISCLAIMER는 data/copy.json(P2)에서 읽는다. copy 로드 뒤 DISCLAIMER 변수를 채운다.
 STEPS = ["landing", "optional", "diagnose", "context", "result", "detail", "feedback"]
 
 
@@ -76,6 +73,9 @@ st.set_page_config(page_title="잠재력 발견", page_icon=":material/explore:"
 init_state()
 questions_payload = load_json("questions.json")
 profiles_payload = load_json("job_profiles.json")
+copy = load_json("copy.json")
+SCREEN = copy["screens"]
+DISCLAIMER = copy["disclaimer"]
 likert_labels = questions_payload["likert_labels"]
 
 st.markdown(
@@ -303,12 +303,15 @@ if st.session_state.step == "landing":
         unsafe_allow_html=True,
     )
 
+    st.header(SCREEN["landing_headline"])
+    st.write(SCREEN["landing_first_line"])
+    st.caption("흥미·업무 방식·상황 판단에 답하면, 8개 대분류 직군 중 상대적으로 가까운 TOP 5를 보여 줍니다.")
     st.info(DISCLAIMER)
     st.markdown('<p class="landing-note">결과는 합격 가능성·능력 판정이 아닌, 탐색 우선순위 안내입니다.</p>', unsafe_allow_html=True)
     st.write("")
     st.checkbox("안내를 확인했고, 결과가 합격·능력 판정이 아님을 이해합니다.", key="consent")
     st.button(
-        "진단 시작",
+        SCREEN["start_button"],
         type="primary",
         icon=":material/play_arrow:",
         disabled=not st.session_state.consent,
@@ -354,6 +357,12 @@ elif st.session_state.step == "diagnose":
     st.markdown('<div class="page-section-chip">답변 진행률</div>', unsafe_allow_html=True)
     st.progress(min(1.0, answered_count / max(total_questions, 1)))
     st.caption(f"{answered_count} / {total_questions}문항 · 한 문항에는 한 가지만 묻습니다.")
+    st.header("핵심 진단")
+    st.progress(min(1.0, len(answered_ids) / max(len(queue), 1)))
+    st.caption(f"{len(answered_ids)} / 약 {len(queue)}문항 · 한 문항에는 한 가지만 묻습니다.")
+    if len(queue) and len(answered_ids) >= len(queue) / 2:
+        st.caption(SCREEN["mid_encourage"])
+    st.caption(SCREEN["skip_hint"])
 
     if current is None:
         go("context")
@@ -422,8 +431,9 @@ elif st.session_state.step == "context":
                 "region": region,
                 "work_style": None if work_style in {None, "미입력"} else work_style,
             }
-            user_vector, _clusters = build_user_profile(questions_payload, st.session_state.responses)
-            ranked = rank_job_families(user_vector, profiles_payload["job_families"])
+            with st.spinner(SCREEN["calculating"]):
+                user_vector, _clusters = build_user_profile(questions_payload, st.session_state.responses)
+                ranked = rank_job_families(user_vector, profiles_payload["job_families"])
             st.session_state.user_vector = user_vector
             st.session_state.recommendations = ranked
             go("result")
@@ -431,26 +441,30 @@ elif st.session_state.step == "context":
 
 elif st.session_state.step == "result":
     st.header("지금 더 탐색해 볼 직군")
+    st.write(SCREEN["result_top"])
     st.info(DISCLAIMER)
     if st.session_state.recommendations and st.session_state.recommendations[0].get("close_score"):
-        st.warning("1위와 2위의 점수 차이가 작습니다. 단정하지 말고 두 직군을 함께 보세요.")
+        st.warning(SCREEN["close_score_note"])
 
     for item in st.session_state.recommendations:
         explained = explain_recommendation(item, st.session_state.context)
         with st.container(border=True):
             st.subheader(f"{item['rank']}. {item['name']}")
             st.metric("현재 프로파일 기준 상대 적합도", f"{item['total']:.0f}/100")
-            st.caption(item["band"])
-            st.write("왜 이 직군을 더 볼까요?")
+            st.caption(copy["result"]["band_labels"].get(item["band"], item["band"]))
+            st.write(copy["result"]["reasons_heading"])
             for line in explained["reasons"]:
                 st.write(f"- {line}")
-            st.write("무엇을 확인할까요?")
+            st.write(copy["result"]["cautions_heading"])
             for line in explained["cautions"]:
                 st.write(f"- {line}")
             if st.button("연관 직업 보기", key=f"open_{item['job_family_id']}", icon=":material/work:"):
                 st.session_state.selected_job_id = item["job_family_id"]
                 go("detail")
                 st.rerun()
+
+    st.caption(SCREEN["result_footer"])
+    st.caption(SCREEN["next_step"])
 
     with st.container(horizontal=True):
         if st.button("이전", icon=":material/arrow_back:"):
