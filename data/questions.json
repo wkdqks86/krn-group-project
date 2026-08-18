@@ -162,7 +162,7 @@
       "type": "likert",
       "axis": "self_management_execution",
       "required": true,
-      "prompt": "마감과 우선순위를 스스로 나눠, 오늘 할 일까지 내려놓는 편이다."
+      "prompt": "업무의 마감과 우선순위를 정한 뒤, 이를 구체적인 일일 계획으로 구체화하는 편이다."
     },
     {
       "question_id": "SJT1",
