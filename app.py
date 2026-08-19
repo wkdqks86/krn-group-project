@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-import plotly.graph_objects as go
+import plotly.graph_objects as pgo
 import streamlit as st
 
 from domain.branching import (
@@ -453,9 +453,9 @@ elif st.session_state.step == "result":
         with st.container(border=True):
             st.subheader(f"성향 요약 · {profile['type']['name']}")
             st.write(profile["type"]["description"])
-            radar = go.Figure()
+            radar = pgo.Figure()
             radar.add_trace(
-                go.Scatterpolar(
+                pgo.Scatterpolar(
                     r=profile["radar"]["values"],
                     theta=profile["radar"]["axes"],
                     fill="toself",
