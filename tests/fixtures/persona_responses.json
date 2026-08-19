@@ -1,0 +1,354 @@
+{
+  "schema_version": "1.0",
+  "purpose": "가이드 §5 '대표 사용자 결과 회귀 테스트'. 엔진·문항·가중치를 바꿨을 때 대표 사용자 3명의 결과가 어떻게 달라지는지 PR마다 확인한다.",
+  "authored_by": "P3 백엔드·엔진 (이성기)",
+  "authored_at": "2026-08-19",
+  "note": "expected는 현재 main의 실제 계산 결과다. 값을 손으로 고치지 말고, 엔진을 의도적으로 바꿨을 때만 재생성한다.",
+  "personas": [
+    {
+      "id": "minji",
+      "name": "민지, 25세",
+      "summary": "문과 전공, 인턴 1회. 사람·표현 쪽에 답이 몰림",
+      "responses": {
+        "R1": 2,
+        "R2": 2,
+        "I1": 3,
+        "I2": 3,
+        "A1": 4,
+        "A2": 4,
+        "S1": 5,
+        "S2": 4,
+        "E1": 3,
+        "E2": 3,
+        "C1": 3,
+        "C2": 3,
+        "PS1": 3,
+        "PS2": 3,
+        "LOG1": 3,
+        "LOG2": 3,
+        "COL1": 4,
+        "COM1": 4,
+        "PER1": 3,
+        "SM1": 3,
+        "SJT1": "SJT1_D",
+        "SJT2": "SJT2_C",
+        "SJT3": "SJT3_C",
+        "SJT4": "SJT4_B",
+        "FU_PEOPLE_1": "FU_PEOPLE_1_A",
+        "FU_PEOPLE_2": "FU_PEOPLE_2_A",
+        "FU_ANALYZE_1": "FU_ANALYZE_1_C",
+        "FU_ANALYZE_2": "FU_ANALYZE_2_C"
+      },
+      "expected": {
+        "clusters": [
+          "people",
+          "analyze"
+        ],
+        "visible_question_count": 28,
+        "unanswered": [],
+        "user_vector": {
+          "R": 17.5,
+          "I": 35.0,
+          "A": 52.5,
+          "S": 91.25,
+          "E": 35.0,
+          "C": 35.0,
+          "problem_solving": 35.0,
+          "logical": 35.0,
+          "collaboration": 70.5,
+          "communication": 75.8333,
+          "persistence": 35.0,
+          "self_management_execution": 35.0
+        },
+        "ranking": [
+          {
+            "rank": 1,
+            "job_family_id": "J04",
+            "name": "교육·공공",
+            "total": 62.0,
+            "band": "가장 높은 탐색 우선순위"
+          },
+          {
+            "rank": 2,
+            "job_family_id": "J07",
+            "name": "영업·마케팅",
+            "total": 53.7,
+            "band": "높은 탐색 우선순위"
+          },
+          {
+            "rank": 3,
+            "job_family_id": "J05",
+            "name": "보건·의료",
+            "total": 51.6,
+            "band": "높은 탐색 우선순위"
+          },
+          {
+            "rank": 4,
+            "job_family_id": "J08",
+            "name": "서비스·운영",
+            "total": 51.5,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 5,
+            "job_family_id": "J06",
+            "name": "예술·디자인",
+            "total": 50.2,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 6,
+            "job_family_id": "J01",
+            "name": "경영·사무·금융",
+            "total": 42.6,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 7,
+            "job_family_id": "J03",
+            "name": "IT·데이터",
+            "total": 39.5,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 8,
+            "job_family_id": "J02",
+            "name": "연구·공학기술",
+            "total": 37.3,
+            "band": "함께 탐색"
+          }
+        ]
+      }
+    },
+    {
+      "id": "junho",
+      "name": "준호, 30세",
+      "summary": "영업 4년 후 사무·기획 탐색. 설득·실행 쪽에 답이 몰림",
+      "responses": {
+        "R1": 2,
+        "R2": 3,
+        "I1": 3,
+        "I2": 3,
+        "A1": 2,
+        "A2": 2,
+        "S1": 4,
+        "S2": 4,
+        "E1": 5,
+        "E2": 5,
+        "C1": 4,
+        "C2": 3,
+        "PS1": 4,
+        "PS2": 3,
+        "LOG1": 3,
+        "LOG2": 4,
+        "COL1": 4,
+        "COM1": 5,
+        "PER1": 4,
+        "SM1": 4,
+        "SJT1": "SJT1_C",
+        "SJT2": "SJT2_B",
+        "SJT3": "SJT3_C",
+        "SJT4": "SJT4_D",
+        "FU_EXECUTE_1": "FU_EXECUTE_1_C",
+        "FU_EXECUTE_2": "FU_EXECUTE_2_C",
+        "FU_PEOPLE_1": "FU_PEOPLE_1_C",
+        "FU_PEOPLE_2": "FU_PEOPLE_2_D"
+      },
+      "expected": {
+        "clusters": [
+          "execute",
+          "people"
+        ],
+        "visible_question_count": 28,
+        "unanswered": [],
+        "user_vector": {
+          "R": 26.25,
+          "I": 35.0,
+          "A": 17.5,
+          "S": 60.6818,
+          "E": 100.0,
+          "C": 43.75,
+          "problem_solving": 51.25,
+          "logical": 43.75,
+          "collaboration": 63.4091,
+          "communication": 70.0,
+          "persistence": 52.5,
+          "self_management_execution": 64.5
+        },
+        "ranking": [
+          {
+            "rank": 1,
+            "job_family_id": "J07",
+            "name": "영업·마케팅",
+            "total": 65.9,
+            "band": "가장 높은 탐색 우선순위"
+          },
+          {
+            "rank": 2,
+            "job_family_id": "J04",
+            "name": "교육·공공",
+            "total": 58.2,
+            "band": "높은 탐색 우선순위"
+          },
+          {
+            "rank": 3,
+            "job_family_id": "J08",
+            "name": "서비스·운영",
+            "total": 56.9,
+            "band": "높은 탐색 우선순위"
+          },
+          {
+            "rank": 4,
+            "job_family_id": "J01",
+            "name": "경영·사무·금융",
+            "total": 56.2,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 5,
+            "job_family_id": "J05",
+            "name": "보건·의료",
+            "total": 53.3,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 6,
+            "job_family_id": "J03",
+            "name": "IT·데이터",
+            "total": 46.5,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 7,
+            "job_family_id": "J02",
+            "name": "연구·공학기술",
+            "total": 46.2,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 8,
+            "job_family_id": "J06",
+            "name": "예술·디자인",
+            "total": 44.4,
+            "band": "함께 탐색"
+          }
+        ]
+      }
+    },
+    {
+      "id": "seoyeon",
+      "name": "서연, 27세",
+      "summary": "디자인 전공, 포트폴리오 준비 중. 만들기 쪽에 답이 몰림",
+      "responses": {
+        "R1": 3,
+        "R2": 3,
+        "I1": 3,
+        "I2": 3,
+        "A1": 5,
+        "A2": 5,
+        "S1": 3,
+        "S2": 3,
+        "E1": 3,
+        "E2": 2,
+        "C1": 2,
+        "C2": 2,
+        "PS1": 4,
+        "PS2": 4,
+        "LOG1": 3,
+        "LOG2": 3,
+        "COL1": 3,
+        "COM1": 4,
+        "PER1": 4,
+        "SM1": 3,
+        "SJT1": "SJT1_B",
+        "SJT2": "SJT2_A",
+        "SJT3": "SJT3_B",
+        "SJT4": "SJT4_C",
+        "FU_CRAFT_1": "FU_CRAFT_1_A",
+        "FU_CRAFT_2": "FU_CRAFT_2_A",
+        "FU_ANALYZE_1": "FU_ANALYZE_1_B",
+        "FU_ANALYZE_2": "FU_ANALYZE_2_A"
+      },
+      "expected": {
+        "clusters": [
+          "craft",
+          "analyze"
+        ],
+        "visible_question_count": 28,
+        "unanswered": [],
+        "user_vector": {
+          "R": 50.0,
+          "I": 35.0,
+          "A": 100.0,
+          "S": 35.0,
+          "E": 26.25,
+          "C": 17.5,
+          "problem_solving": 78.2143,
+          "logical": 48.3333,
+          "collaboration": 35.0,
+          "communication": 55.8333,
+          "persistence": 64.5,
+          "self_management_execution": 35.0
+        },
+        "ranking": [
+          {
+            "rank": 1,
+            "job_family_id": "J06",
+            "name": "예술·디자인",
+            "total": 66.5,
+            "band": "가장 높은 탐색 우선순위"
+          },
+          {
+            "rank": 2,
+            "job_family_id": "J02",
+            "name": "연구·공학기술",
+            "total": 51.7,
+            "band": "높은 탐색 우선순위"
+          },
+          {
+            "rank": 3,
+            "job_family_id": "J03",
+            "name": "IT·데이터",
+            "total": 48.5,
+            "band": "높은 탐색 우선순위"
+          },
+          {
+            "rank": 4,
+            "job_family_id": "J05",
+            "name": "보건·의료",
+            "total": 46.1,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 5,
+            "job_family_id": "J04",
+            "name": "교육·공공",
+            "total": 44.4,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 6,
+            "job_family_id": "J07",
+            "name": "영업·마케팅",
+            "total": 44.1,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 7,
+            "job_family_id": "J01",
+            "name": "경영·사무·금융",
+            "total": 40.3,
+            "band": "함께 탐색"
+          },
+          {
+            "rank": 8,
+            "job_family_id": "J08",
+            "name": "서비스·운영",
+            "total": 40.1,
+            "band": "함께 탐색"
+          }
+        ]
+      }
+    }
+  ]
+}
