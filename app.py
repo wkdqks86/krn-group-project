@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import plotly.graph_objects as go
 import streamlit as st
 
 from domain.branching import (
@@ -13,6 +14,7 @@ from domain.branching import (
 )
 from domain.scoring import ENGINE_VERSION, rank_job_families
 from services.explainer import explain_recommendation
+from services.personality import personality_profile
 from services.work24 import job_family_detail
 
 ROOT = Path(__file__).resolve().parent
@@ -446,6 +448,37 @@ elif st.session_state.step == "result":
     if st.session_state.recommendations and st.session_state.recommendations[0].get("close_score"):
         st.warning(SCREEN["close_score_note"])
 
+    if st.session_state.user_vector:
+        profile = personality_profile(st.session_state.user_vector)
+        with st.container(border=True):
+            st.subheader(f"성향 요약 · {profile['type']['name']}")
+            st.write(profile["type"]["description"])
+            radar = go.Figure()
+            radar.add_trace(
+                go.Scatterpolar(
+                    r=profile["radar"]["values"],
+                    theta=profile["radar"]["axes"],
+                    fill="toself",
+                    name="내 프로파일",
+                )
+            )
+            radar.update_layout(
+                polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
+                showlegend=False,
+                margin=dict(l=20, r=20, t=20, b=20),
+            )
+            st.plotly_chart(radar, use_container_width=True)
+            col_strength, col_growth = st.columns(2)
+            with col_strength:
+                st.write(f"**{profile['strengths_heading']}**")
+                for line in profile["strengths"]:
+                    st.write(f"- {line}")
+            with col_growth:
+                st.write(f"**{profile['growth_points_heading']}**")
+                st.caption(profile["growth_points_note"])
+                for line in profile["growth_points"]:
+                    st.write(f"- {line}")
+
     for item in st.session_state.recommendations:
         explained = explain_recommendation(item, st.session_state.context)
         with st.container(border=True):
@@ -496,6 +529,8 @@ elif st.session_state.step == "detail":
                 st.write(f"**{occupation['name']}**")
                 st.write(snapshot["summary"])
                 st.caption(" · ".join(snapshot["typical_tasks"]))
+                if snapshot.get("fit_hint"):
+                    st.write(snapshot["fit_hint"])
                 st.caption(snapshot["education_hint"])
                 st.link_button("직업정보 보러가기", occupation["source_url"], icon=":material/open_in_new:")
         if st.button("결과로 돌아가기", icon=":material/arrow_back:"):
