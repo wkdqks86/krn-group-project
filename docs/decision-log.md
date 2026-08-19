@@ -149,8 +149,6 @@ PRD v2.0을 기준으로 한 초기 세팅 기록입니다. 회의에서 바뀌�
 
 - `occupation_version`: 0.2.0
 - `personality_content_version`: 0.1.0
-<<<<<<< Updated upstream
-=======
 
 ## 2026-08-19 · P2 직군 가중치 조정 v0.1.1 재반영 (연구 R↓, 예술 의사소통↓)
 
@@ -207,4 +205,3 @@ PRD v2.0을 기준으로 한 초기 세팅 기록입니다. 회의에서 바뀌�
 
 - 12축 무작위 벡터 30회 × 8개 직군 전수(240개 케이스)에 대해 reasons·cautions·actions·growth·glossary 전 라인 금지어(결핍어·단정어·예측어) 스캔 0건.
 - `pytest -q` 6/6 통과, `app.py` 문법 검사 통과.
->>>>>>> Stashed changes
