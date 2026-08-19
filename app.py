@@ -480,17 +480,35 @@ elif st.session_state.step == "result":
                     st.write(f"- {line}")
 
     for item in st.session_state.recommendations:
-        explained = explain_recommendation(item, st.session_state.context)
+        explained = explain_recommendation(
+            item, st.session_state.context, user_vector=st.session_state.user_vector
+        )
         with st.container(border=True):
             st.subheader(f"{item['rank']}. {item['name']}")
             st.metric("현재 프로파일 기준 상대 적합도", f"{item['total']:.0f}/100")
             st.caption(copy["result"]["band_labels"].get(item["band"], item["band"]))
-            st.write(copy["result"]["reasons_heading"])
+
+            st.markdown(f"**{copy['result']['reasons_heading']}**")
             for line in explained["reasons"]:
                 st.write(f"- {line}")
-            st.write(copy["result"]["cautions_heading"])
+
+            st.markdown(f"**{copy['result']['cautions_heading']}**")
             for line in explained["cautions"]:
                 st.write(f"- {line}")
+
+            st.markdown(f"**{copy['result']['actions_heading']}**")
+            for line in explained["actions"]:
+                st.write(f"- {line}")
+
+            st.markdown(f"**{copy['result']['growth_heading']}**")
+            for line in explained["growth"]:
+                st.write(f"- {line}")
+
+            if explained["glossary"]:
+                st.markdown(f"**{copy['result']['glossary_heading']}**")
+                for line in explained["glossary"]:
+                    st.write(f"- {line}")
+
             if st.button("연관 직업 보기", key=f"open_{item['job_family_id']}", icon=":material/work:"):
                 st.session_state.selected_job_id = item["job_family_id"]
                 go("detail")
