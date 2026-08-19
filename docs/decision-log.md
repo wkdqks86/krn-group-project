@@ -149,3 +149,23 @@ PRD v2.0을 기준으로 한 초기 세팅 기록입니다. 회의에서 바뀌�
 
 - `occupation_version`: 0.2.0
 - `personality_content_version`: 0.1.0
+<<<<<<< Updated upstream
+=======
+
+## 2026-08-19 · P2 직군 가중치 조정 v0.1.1 재반영 (연구 R↓, 예술 의사소통↓)
+
+### 결정
+
+- `data/job_profiles.json`의 J02(연구·공학기술), J06(예술·디자인) 가중치를 아래처럼 조정. 값 자체는 이전(2026-08-18) 항목에서 이미 합의된 내용과 동일.
+  - J02: R 0.16→0.08, I 0.16→0.18, problem_solving 0.16→0.18, persistence 0.08→0.12
+  - J06: communication 0.16→0.10, A 0.22→0.24, problem_solving 0.08→0.12
+- `job_profile_version`: 0.1.0 → 0.1.1
+
+### 이유(재작업 배경)
+
+- 같은 내용으로 브랜치를 두 번 만들었으나(v0.1.1, v0.1.2) 모두 최신 main이 아닌 예전 지점에서 갈라져 실제로는 반영되지 않았거나 PR 병합 시 다른 파일을 손상시킬 뻔했음. 이번엔 `origin/main`(PR #5까지 반영된 최신 지점)을 직접 기준점으로 삼아 이 두 파일만 수정.
+
+### 검증
+
+- 8개 직군 `axis_weight` 합 전부 1.0 확인, `pytest -q` 6/6 통과(J03 최상위 회귀 테스트 영향 없음).
+>>>>>>> Stashed changes
