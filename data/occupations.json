@@ -8,7 +8,7 @@
       "job_family_id": "J01",
       "external_code": "",
       "name": "경영기획 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "조직의 목표와 자원을 계획하고, 진행 상황을 지표로 점검하며 다음 액션을 조율한다.",
         "typical_tasks": ["사업 계획 수립", "성과 지표 관리", "유관 부서 조율"],
@@ -22,7 +22,7 @@
       "job_family_id": "J01",
       "external_code": "",
       "name": "인사 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "채용부터 평가·조직문화까지, 사람과 관련된 제도를 설계하고 운영한다.",
         "typical_tasks": ["채용 운영", "인사 제도 관리", "구성원 상담"],
@@ -36,7 +36,7 @@
       "job_family_id": "J01",
       "external_code": "",
       "name": "회계·재무 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "자금 흐름과 장부를 관리하고, 결산·보고서로 재무 상태를 정리한다.",
         "typical_tasks": ["전표·결산", "예산 관리", "재무 보고"],
@@ -50,7 +50,7 @@
       "job_family_id": "J01",
       "external_code": "",
       "name": "구매·조달 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "필요한 자재·서비스를 비교·협상해 조달하고, 공급망을 관리한다.",
         "typical_tasks": ["공급업체 관리", "계약 협상", "단가 검토"],
@@ -64,7 +64,7 @@
       "job_family_id": "J01",
       "external_code": "",
       "name": "법무·컴플라이언스 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "계약서와 사내 규정을 검토해 법적 리스크를 관리한다.",
         "typical_tasks": ["계약 검토", "규정 정비", "리스크 점검"],
@@ -78,7 +78,7 @@
       "job_family_id": "J02",
       "external_code": "",
       "name": "연구원(R&D)",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "가설을 세우고 실험·분석을 반복하며 기술적 원인과 해법을 찾는다.",
         "typical_tasks": ["실험 설계", "데이터 해석", "기술 문서 작성"],
@@ -92,7 +92,7 @@
       "job_family_id": "J02",
       "external_code": "",
       "name": "기계 엔지니어",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "기계 시스템을 설계하고, 시험을 거쳐 현장에서 생기는 문제를 개선한다.",
         "typical_tasks": ["설계", "시험", "현장 이슈 대응"],
@@ -106,7 +106,7 @@
       "job_family_id": "J02",
       "external_code": "",
       "name": "전기·전자 엔지니어",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "전기·전자 회로와 시스템을 설계하고, 규격에 맞게 검증한다.",
         "typical_tasks": ["회로 설계", "테스트", "규격 대응"],
@@ -120,7 +120,7 @@
       "job_family_id": "J02",
       "external_code": "",
       "name": "화학·소재 엔지니어",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "소재 특성을 분석하고, 공정 조건을 실험으로 개선한다.",
         "typical_tasks": ["소재 분석", "공정 실험", "품질 개선"],
@@ -134,7 +134,7 @@
       "job_family_id": "J02",
       "external_code": "",
       "name": "품질관리(QC) 엔지니어",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "제품이 규격을 만족하는지 측정·검사하고, 불량 원인을 추적한다.",
         "typical_tasks": ["측정·검사", "불량 분석", "공정 피드백"],
@@ -148,7 +148,7 @@
       "job_family_id": "J03",
       "external_code": "",
       "name": "소프트웨어 개발자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "요구사항을 코드로 구현하고, 리뷰와 장애 대응을 거쳐 시스템을 유지한다.",
         "typical_tasks": ["기능 구현", "코드 리뷰", "장애 대응"],
@@ -162,7 +162,7 @@
       "job_family_id": "J03",
       "external_code": "",
       "name": "데이터 분석가",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "데이터를 정리·분석해 의사결정에 쓸 근거를 만들고 인사이트로 전달한다.",
         "typical_tasks": ["지표 설계", "분석", "인사이트 전달"],
@@ -176,7 +176,7 @@
       "job_family_id": "J03",
       "external_code": "",
       "name": "QA 엔지니어",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "제품이 기대한 품질 기준을 만족하는지 테스트로 검증하고 결함을 추적한다.",
         "typical_tasks": ["테스트 설계", "결함 보고", "회귀 검증"],
@@ -190,7 +190,7 @@
       "job_family_id": "J03",
       "external_code": "",
       "name": "프로덕트 매니저",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "사용자 문제를 정의하고, 개발·디자인과 함께 우선순위를 정해 제품을 만든다.",
         "typical_tasks": ["요구사항 정리", "우선순위 결정", "팀 간 조율"],
@@ -204,7 +204,7 @@
       "job_family_id": "J03",
       "external_code": "",
       "name": "데이터 엔지니어",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "데이터가 안정적으로 모이고 흐르도록 파이프라인을 설계·운영한다.",
         "typical_tasks": ["파이프라인 구축", "데이터 품질 관리", "장애 대응"],
@@ -218,7 +218,7 @@
       "job_family_id": "J04",
       "external_code": "",
       "name": "교육기획 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "학습 목표에 맞는 프로그램을 설계하고, 운영하며 효과를 점검한다.",
         "typical_tasks": ["커리큘럼 기획", "운영 조율", "효과 점검"],
@@ -232,7 +232,7 @@
       "job_family_id": "J04",
       "external_code": "",
       "name": "직업상담사",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "진로·취업 정보를 바탕으로 상담하며 사람들의 탐색을 돕는다.",
         "typical_tasks": ["상담", "정보 안내", "프로그램 운영"],
@@ -246,7 +246,7 @@
       "job_family_id": "J04",
       "external_code": "",
       "name": "행정 사무원",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "공공·기관의 문서와 민원을 절차에 따라 처리하고 규정을 확인한다.",
         "typical_tasks": ["문서 처리", "민원 응대", "규정 확인"],
@@ -260,7 +260,7 @@
       "job_family_id": "J04",
       "external_code": "",
       "name": "사회복지사",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "어려움을 겪는 대상자를 상담하고, 필요한 자원·서비스를 연결한다.",
         "typical_tasks": ["상담", "자원 연계", "사례 관리"],
@@ -274,7 +274,7 @@
       "job_family_id": "J04",
       "external_code": "",
       "name": "공공기관 정책 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "정책 자료를 조사·정리하고, 시행 과정을 관리한다.",
         "typical_tasks": ["자료 조사", "정책 초안 작성", "시행 관리"],
@@ -288,7 +288,7 @@
       "job_family_id": "J05",
       "external_code": "",
       "name": "간호사",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "환자 상태를 관찰하고 기록하며, 팀과 협업해 간호 업무를 수행한다.",
         "typical_tasks": ["간호 실무", "기록", "팀 협업"],
@@ -302,7 +302,7 @@
       "job_family_id": "J05",
       "external_code": "",
       "name": "보건의료정보관리사",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "의료 정보를 분류·관리하고, 통계로 활용할 수 있게 정리한다.",
         "typical_tasks": ["기록 관리", "분류", "통계 지원"],
@@ -316,7 +316,7 @@
       "job_family_id": "J05",
       "external_code": "",
       "name": "임상병리사",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "검체를 분석해 진단에 필요한 정보를 만들고 정도 관리를 수행한다.",
         "typical_tasks": ["검사", "정도 관리", "결과 보고"],
@@ -330,7 +330,7 @@
       "job_family_id": "J05",
       "external_code": "",
       "name": "물리치료사",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "환자의 신체 기능 회복을 돕는 치료 계획을 세우고 시행한다.",
         "typical_tasks": ["평가", "치료 시행", "경과 기록"],
@@ -344,7 +344,7 @@
       "job_family_id": "J05",
       "external_code": "",
       "name": "영양사",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "대상자의 상태에 맞는 식단을 계획하고, 급식·영양 관리를 한다.",
         "typical_tasks": ["식단 계획", "급식 관리", "영양 상담"],
@@ -358,7 +358,7 @@
       "job_family_id": "J06",
       "external_code": "",
       "name": "UX/UI 디자이너",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "사용자가 서비스를 이해하고 쓰기 쉽도록, 리서치부터 화면과 흐름을 설계한다.",
         "typical_tasks": ["리서치", "와이어프레임", "프로토타입"],
@@ -372,7 +372,7 @@
       "job_family_id": "J06",
       "external_code": "",
       "name": "콘텐츠 기획자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "메시지와 형식을 정해 콘텐츠를 기획하고, 제작·성과까지 조율한다.",
         "typical_tasks": ["기획안 작성", "제작 조율", "성과 점검"],
@@ -386,7 +386,7 @@
       "job_family_id": "J06",
       "external_code": "",
       "name": "영상 편집자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "촬영본을 이야기와 리듬에 맞게 편집하고, 색·자막까지 마무리한다.",
         "typical_tasks": ["컷 편집", "자막·색보정", "납품"],
@@ -400,7 +400,7 @@
       "job_family_id": "J06",
       "external_code": "",
       "name": "그래픽 디자이너",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "브랜드·서비스에 맞는 시각 이미지를 기획하고 제작한다.",
         "typical_tasks": ["시안 제작", "브랜드 가이드 적용", "피드백 반영"],
@@ -414,7 +414,7 @@
       "job_family_id": "J06",
       "external_code": "",
       "name": "일러스트레이터",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "메시지나 감정을 그림으로 표현해 다양한 매체에 맞게 제작한다.",
         "typical_tasks": ["컨셉 스케치", "채색·마무리", "납품 형식 맞춤"],
@@ -428,7 +428,7 @@
       "job_family_id": "J07",
       "external_code": "",
       "name": "B2B 영업 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "기업 고객의 필요를 파악하고, 제안부터 계약까지 관계를 이끈다.",
         "typical_tasks": ["고객 미팅", "제안서", "계약 관리"],
@@ -442,7 +442,7 @@
       "job_family_id": "J07",
       "external_code": "",
       "name": "브랜드 마케터",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "브랜드가 전달할 메시지와 접점을 기획하고, 캠페인으로 실행한다.",
         "typical_tasks": ["캠페인 기획", "콘텐츠 방향", "성과 리뷰"],
@@ -456,7 +456,7 @@
       "job_family_id": "J07",
       "external_code": "",
       "name": "퍼포먼스 마케터",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "광고·채널 실험을 반복하며, 데이터로 성과 지표를 개선한다.",
         "typical_tasks": ["매체 운영", "A/B 테스트", "리포팅"],
@@ -470,7 +470,7 @@
       "job_family_id": "J07",
       "external_code": "",
       "name": "MD(상품기획자)",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "시장과 판매 데이터를 보고, 상품 구성과 가격을 기획한다.",
         "typical_tasks": ["트렌드 조사", "상품 구성", "가격·발주 관리"],
@@ -484,7 +484,7 @@
       "job_family_id": "J07",
       "external_code": "",
       "name": "고객성공(CS) 매니저",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "고객이 서비스를 잘 쓰도록 온보딩하고, 관계를 꾸준히 유지한다.",
         "typical_tasks": ["온보딩 지원", "정기 미팅", "이탈 신호 관리"],
@@ -498,7 +498,7 @@
       "job_family_id": "J08",
       "external_code": "",
       "name": "고객서비스 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "문의와 불만을 듣고 절차에 따라 문제를 해결하며, 유관 부서와 협력한다.",
         "typical_tasks": ["상담", "이슈 기록", "유관 부서 전달"],
@@ -512,7 +512,7 @@
       "job_family_id": "J08",
       "external_code": "",
       "name": "물류 운영 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "입고·출고·재고가 일정대로 흐르도록 현장을 관리하고, 이슈에 대응한다.",
         "typical_tasks": ["일정 관리", "이슈 대응", "협력사 조율"],
@@ -526,7 +526,7 @@
       "job_family_id": "J08",
       "external_code": "",
       "name": "운영 매니저",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "서비스가 매일 같은 품질로 돌아가도록 프로세스와 인력을 관리하고 개선한다.",
         "typical_tasks": ["운영 지표 관리", "인력 배치", "개선 과제"],
@@ -540,7 +540,7 @@
       "job_family_id": "J08",
       "external_code": "",
       "name": "매장 관리자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "매장의 매출·인력·재고를 챙기며 현장을 운영한다.",
         "typical_tasks": ["인력 배치", "재고 관리", "매출 점검"],
@@ -554,7 +554,7 @@
       "job_family_id": "J08",
       "external_code": "",
       "name": "프로세스 개선 담당자",
-      "source_url": "https://www.work.go.kr/",
+      "source_url": "https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do",
       "snapshot_json": {
         "summary": "반복 업무의 흐름을 분석해 비효율을 찾고, 개선안을 만든다.",
         "typical_tasks": ["프로세스 분석", "개선안 설계", "적용·점검"],
