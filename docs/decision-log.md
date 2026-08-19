@@ -86,3 +86,66 @@ PRD v2.0을 기준으로 한 초기 세팅 기록입니다. 회의에서 바뀌�
 ### 버전
 
 - `question_version`: 0.1.1
+
+## 2026-08-18 · P2 연관 직업 콘텐츠 보강 (v0.1.1)
+
+### 결정
+
+- `data/occupations.json`의 8개 직군 × 3개(총 24개) 연관 직업을 유지하되, 내용을 두 겹으로 보강.
+  - `summary`: 한 줄 요약을 조금 더 구체적으로(무엇을, 어떻게 하는지 한 절 추가).
+  - `fit_hint`(신규 필드): "~하면 잘 맞을 수 있어요" 톤으로, 해당 직업의 실제 업무 특성과 이어지는 성향 힌트 한 줄. 결핍어·단정어·예측어 금지 검증 통과.
+- `app.py` detail 화면에 `fit_hint` 렌더링 한 줄 추가(있을 때만 표시, 로직 변경 없음).
+
+### 이유
+
+- 사용자가 detail 화면에서 "콘텐츠가 너무 단순하다"고 지적. 원인은 스키마 자체가 요약 1줄 + 업무 키워드 3개뿐이었기 때문(전 직군 공통, 버그 아님).
+- 직업 개수(3개)를 늘리는 대신, 있는 3개의 내용 밀도를 높이는 쪽으로 범위를 좁힘(팀 확인).
+
+### 확인 필요(P5에게 별도 전달)
+
+- `services/work24.py`가 `WORK24_API_KEY`를 읽는데 `.streamlit/secrets.toml.example`은 `WORK24_JOB_INFO_KEY`로 되어 있어, 실제 키를 넣어도 라이브 API가 절대 켜지지 않는 이름 불일치 버그 발견. P5 확인 필요.
+- `external_code`가 전부 빈 문자열이라 "직업정보 보러가기" 링크가 항상 work.go.kr 홈페이지로만 연결됨. 실제 직업 코드가 없어 임의로 채우지 않음(허위 링크 방지).
+
+### 검증
+
+- JSON 유효성 확인, 금지어(결핍어·단정어·예측어) 0건, `pytest -q` 6/6 통과.
+
+### 버전
+
+- `occupation_version`: 0.1.1
+
+## 2026-08-19 · P2 결과 콘텐츠 대폭 확충 (성향 프로파일 신설 + 연관 직업 확대)
+
+### 결정
+
+- **성향 프로파일 신설** (`services/personality.py` + `data/personality_content.json`, `app.py` result 화면 상단): 문항 수는 늘리지 않고(28문항 유지), 이미 계산된 12축 `user_vector`를 더 풍부하게 보여주는 3종 콘텐츠 추가.
+  - 12축 레이더차트(plotly `Scatterpolar`).
+  - 유형 요약: RIASEC 6축 중 상위 2개를 조합한 이름(예: "탐구-사회형") + 설명 한 줄. 30개 조합을 일일이 하드코딩하지 않고, `riasec_root`(6개) × `riasec_phrase`(6개) 조합을 코드로 합성해 생성(유지보수 부담을 줄이기 위한 설계 선택).
+  - 강점 3개 / 낯설 수 있는 부분(성장포인트) 2개: 12축 전체에 대해 축별로 미리 써둔 서술(`axis_strength_text`/`axis_growth_text`)에서 사용자의 상위 3축·하위 2축을 뽑아 노출.
+- `requirements.txt`에 `plotly>=5.20.0` 추가(레이더차트 렌더링용, 기존엔 streamlit/requests/pytest만 있었음).
+- **연관 직업 확대**: `data/occupations.json`을 직군당 3개(총 24개) → 직군당 5개(총 40개)로 확대. 기존 3개 스키마(summary/typical_tasks/fit_hint/education_hint)를 그대로 따름. `occupation_version` 0.1.1 → 0.2.0.
+- 문항(`questions.json`)은 이번 확충 범위에서 제외(사용자 확인, 신뢰도보다 응답 피로 방지 우선).
+
+### 이유
+
+- 사용자가 결과 화면(성향분석·직업추천) 콘텐츠가 전반적으로 부실하다고 지적. 점수는 이미 12축 전체가 계산되는데 화면엔 top3 문장 몇 줄만 노출되고 있었음 — 계산은 있는데 보여주는 게 얇았던 문제.
+- "성향 프로파일"을 결과 화면 최상단(직군 카드 리스트보다 위)에 배치해, 사용자가 자기 자신을 먼저 이해하고 그 다음 직군을 보는 흐름으로 구성.
+
+### 지켜야 할 것 확인
+
+- `domain/scoring.py`(채점 로직)는 변경하지 않음 — `personality.py`는 이미 계산된 `user_vector`를 순위만 매겨 문구에 연결하는 후처리 계층.
+- 함수 시그니처: `personality_profile(user_vector)` 단일 진입점, `explain_recommendation`/`template_reasons` 등 기존 함수는 미변경.
+- 톤앤보이스 금지어 재확인 과정에서 강점/성장포인트 문구 2곳에서 "부족" 발견 → 수정 완료(`data/personality_content.json`의 I축·logical축 growth text).
+
+### 검증
+
+- JSON 유효성(occupations.json 40개 전량, personality_content.json), 직군당 5개 균등 분포 확인.
+- 금지어(결핍어·단정어·예측어) 스캔 0건(occupations.json 40개 + personality_content.json 24개 텍스트 전량).
+- `services/personality.py` 단독 실행 테스트: 샘플 벡터로 유형명 "탐구-사회형" 등 정상 생성 확인.
+- `pytest -q` 6/6 통과(기존 채점 회귀 테스트 영향 없음).
+- `app.py` 문법 검사(`ast.parse`) 통과. Streamlit 실제 구동 화면은 로컬에서 `streamlit run app.py`로 직접 확인 필요(이 환경에서는 서버 구동 불가).
+
+### 버전
+
+- `occupation_version`: 0.2.0
+- `personality_content_version`: 0.1.0
