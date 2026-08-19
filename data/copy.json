@@ -33,6 +33,13 @@
       "change_speed": "이 직군은 상황이 자주 바뀌는 편이에요. 계획을 자주 조정해야 할 수 있어요.",
       "quantitative_work": "이 직군은 수치·데이터를 다루는 비중이 있는 편이에요. 숫자 기반 업무가 자주 나올 수 있어요."
     },
+    "actions_heading": "지금 해볼 수 있는 것",
+    "action_keyword_template": "‘{example}’ 같은 키워드로 공고를 검색해서 실제 업무 범위를 먼저 확인해 보세요.",
+    "growth_heading": "보완하면 좋은 부분",
+    "growth_intro_template": "이 직군에서도 어느 정도 쓰는 힘인데, 지금 답변에서는 상대적으로 덜 드러났어요.",
+    "growth_empty": "지금 답변 기준으로는 이 직군에서 특별히 보완할 부분이 두드러지지 않아요.",
+    "glossary_heading": "공고 볼 때 참고할 점",
+    "glossary_template": "‘{occupation}’ 같은 공고에서는 흔히 이런 표현이 나와요 — {hint}",
     "band_labels": {
       "가장 높은 탐색 우선순위": "지금 가장 먼저 살펴볼 만해요",
       "높은 탐색 우선순위": "함께 눈여겨볼 만해요",

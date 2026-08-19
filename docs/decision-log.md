@@ -186,4 +186,25 @@ PRD v2.0을 기준으로 한 초기 세팅 기록입니다. 회의에서 바뀌�
 
 - 상위/하위 극단 벡터로 8개 직군 전수 생성 후 금지어(결핍어·단정어·예측어) 스캔 0건.
 - `pytest -q` 6/6 통과(엔진·분기 영향 없음). `explain_recommendation` 시그니처 불변.
+
+## 2026-08-19 · P2 직군 카드 5-섹션 구조화 (적합신호·확인점·행동·보완·용어)
+
+### 결정
+
+- 사용자가 "체계적인 분석과 조언이 더 필요하다"고 재차 지적. 결과 화면 직군 카드를 문장 나열형에서 소제목 5개 섹션으로 재구성.
+  1. 왜 이 직군을 더 볼까요 (기존 reasons, 유지)
+  2. 무엇을 확인할까요 (기존 cautions, 유지)
+  3. **지금 해볼 수 있는 것**(신규, `action_lines`): 이 직군에서 가장 비중 큰 축에 대응하는 준비 행동 1개(`personality_content.json`의 `axis_action_text` 12종 신설) + 대표 직업 키워드로 공고 검색을 권하는 문장 1개.
+  4. **보완하면 좋은 부분**(신규, `growth_alignment_lines`): 사용자의 하위 축 중 "이 직군이 실제로 어느 정도 비중 있게 쓰는 축"(axis_weight ≥ 0.06)이 있으면, 이미 만들어둔 `personality_content.json`의 `axis_growth_text`를 재사용해 짚어 줌. 겹치는 게 없으면 `growth_empty` 문구.
+  5. **공고 볼 때 참고할 점**(신규, `glossary_lines`): 그 직군 대표 직업의 실제 `occupations.json` `education_hint`를 그대로 인용(새로 지어내지 않음).
+- `explain_recommendation`에 `user_vector` 선택 인자 추가(기본값 None → 기존 호출부 하위 호환, growth 섹션만 개인화에 사용). `app.py`가 `st.session_state.user_vector`를 넘기도록 연결.
+
+### 이유
+
+- 두 차례에 걸쳐 "메시지가 너무 단순/부실하다"는 지적을 받음. 1차 수정(직군별 문장 차별화)만으로는 부족했고, 사용자가 원한 건 "사실 나열"이 아니라 "무엇을 할지"까지 이어지는 구조. 이미 갖고 있던 데이터(`axis_weight`, `axis_growth_text`, `occupations.json`의 `education_hint`)를 재사용해 새로 지어내는 내용을 최소화.
+
+### 검증
+
+- 12축 무작위 벡터 30회 × 8개 직군 전수(240개 케이스)에 대해 reasons·cautions·actions·growth·glossary 전 라인 금지어(결핍어·단정어·예측어) 스캔 0건.
+- `pytest -q` 6/6 통과, `app.py` 문법 검사 통과.
 >>>>>>> Stashed changes
