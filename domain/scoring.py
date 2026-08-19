@@ -77,7 +77,11 @@ def build_user_vector(
 ) -> dict[str, float]:
     user_vector = empty_axis_map()
     for axis in AXES:
-        likert_100 = likert_to_100(likert_by_axis.get(axis, [3.0]))
+        # 아직 답하지 않은 축은 '낮다'가 아니라 '모른다'이므로 중립 3점으로 둔다.
+        # `.get(axis, [3.0])`만으로는 부족하다. 호출부가 모든 축을 빈 리스트로 미리
+        # 채워 두면 키가 존재해서 기본값이 적용되지 않고 likert_to_100이 예외를 던진다.
+        values = likert_by_axis.get(axis) or [3.0]
+        likert_100 = likert_to_100(values)
         user_vector[axis] = combine_user_axis(likert_100, sjt_scores.get(axis))
     return user_vector
 
