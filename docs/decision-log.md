@@ -168,4 +168,22 @@ PRD v2.0을 기준으로 한 초기 세팅 기록입니다. 회의에서 바뀌�
 ### 검증
 
 - 8개 직군 `axis_weight` 합 전부 1.0 확인, `pytest -q` 6/6 통과(J03 최상위 회귀 테스트 영향 없음).
+
+## 2026-08-19 · P2 결과 근거·주의 문구 심층화 (같은 축도 직군마다 다른 문장)
+
+### 결정
+
+- `services/explainer.py`가 `data/job_profiles.json`의 `example_occupations`·`environment_json`을 함께 읽어, 근거(reasons)·주의(cautions) 문장에 실제 직군 맥락을 넣도록 재작성. 점수·순위 계산은 손대지 않음(후처리 계층 유지).
+- 근거 문장: 기존엔 top3 축 모두 `'{label}' 쪽으로 답이 기울었어요. 이 직군이 그 힘을 오래 쓰는 자리예요.` 한 템플릿을 label만 바꿔 반복. 이제 순위(1/2/3위)별로 다른 문장 구조를 쓰고, 직군명 + 대표 직업(`example_occupations`)을 실제로 인용해 같은 축이라도 직군마다 문장이 달라짐.
+- 주의 문장: 기존 `work_style == 개인 작업 선호` && 4개 직군 하드코딩 allowlist를 제거. 대신 `environment_json`(대면 비중·팀 협업·변화 속도·정량 업무, 1~5점)에서 4점 이상인 항목을 실제로 찾아 그 직군에 맞는 문장을 붙이도록 데이터 기반으로 교체.
+- `data/copy.json`: `reason_template`(단일) → `reason_templates`(1/2/3위별 3종)로 구조 변경, `work_style_caution` 제거, `environment_captions`(4종) 신설.
+
+### 이유
+
+- 사용자가 결과 화면 캡처를 보고 "메시지가 너무 단순하고 중복된다"고 재지적. 8월 18일자 `p2-handoff-result-reason-spec.md`에서 이미 진단했던 문제(축 이름만 바뀌는 flat 템플릿)를 직접 해결.
+
+### 검증
+
+- 상위/하위 극단 벡터로 8개 직군 전수 생성 후 금지어(결핍어·단정어·예측어) 스캔 0건.
+- `pytest -q` 6/6 통과(엔진·분기 영향 없음). `explain_recommendation` 시그니처 불변.
 >>>>>>> Stashed changes
