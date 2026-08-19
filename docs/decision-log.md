@@ -227,3 +227,35 @@ PRD v2.0을 기준으로 한 초기 세팅 기록입니다. 회의에서 바뀌�
 ### 버전
 
 - `occupation_version`: 0.2.0 (source_url 값만 교체, 스키마·개수 변경 없음)
+
+## 2026-08-19 · P2 성향 프로파일·직군 카드 설명 밀도 2배 확장
+
+### 결정
+
+- 사용자가 "현재 검사 후 제공되는 설명의 밀도와 깊이를 2배로" 요청. 성향 프로파일 화면과 직군 카드 5-섹션 양쪽을, 문장 자체를 더 길고 구체적으로 만드는 것 + 항목(불릿) 개수를 늘리는 것 둘 다로 확장.
+- **성향 프로파일** (`data/personality_content.json` → 0.2.0, `services/personality.py`):
+  - `axis_strength_text`·`axis_growth_text` 12개 축 전부에 세 번째 문장(구체적 행동 예시/대처 예시)을 추가해 각 항목을 2문장→3문장으로 확장.
+  - `strength_lines` 기본 개수 3→6, `growth_lines` 기본 개수 2→4로 확대(12축 중 겹치지 않게 6+4=10축까지 노출).
+  - `type_combo_note_template` 신규: 유형 요약 설명 아래에 "두 힘이 실제로 어떤 자리에서 번갈아 드러나는지"를 덧붙이는 문장 추가(축별 고유 조합 데이터 없이 기존 `riasec_phrase`를 재조합해 생성 — 새 사실을 지어내지 않음).
+- **직군 카드 5-섹션** (`data/copy.json` → 0.2.0, `services/explainer.py`):
+  - 근거(reasons) 3종 템플릿, 주의(caution_template), 근무환경 캡션(`environment_captions`) 4종, 행동 키워드 템플릿(`action_keyword_template`)에 각각 두 번째 문장(구체적 확인 포인트·체크리스트성 조언)을 추가.
+  - `action_lines`: 상위 축 1개 → 최대 2개(component_scores 상위 2개)의 `axis_action_text`를 모두 반영해 행동 제안을 2~3줄로 확대.
+  - `growth_alignment_lines`: 후보 1개 → 최대 2개 반환(가중치 상위 순, 기존 임계값·후보 탐색 범위는 top4→top6으로만 넓힘 — 판정 기준 자체는 불변).
+  - `glossary_lines`: 대표 직업 1개 → 최대 2개의 실제 `education_hint`를 그대로 인용(occupations.json 기존 데이터 재사용, 새로 지어내지 않음).
+- `domain/scoring.py`는 이번에도 손대지 않음 — 순위·점수 계산 로직 불변, 위 확장은 전부 explainer/personality 레이어의 문구·개수 조정.
+
+### 이유
+
+- 사용자가 "밀도·깊이 2배"를 명시적으로 요청하며 적용 범위(성향 프로파일 + 직군 카드)와 방향(문장 길이 + 항목 개수 둘 다)을 직접 지정.
+- 점수 계산 로직을 건드리지 않고도 늘릴 수 있는 부분(component_scores 상위 2개, occupations.json의 직군당 5개 중 상위 2개 등 이미 계산·수집된 데이터)만 활용해 날조 없이 확장.
+
+### 검증
+
+- 12축 무작위 벡터 30회 × 8개 직군 전수에 대해 성향 프로파일 5개 필드 + 직군 카드 5-섹션 전 라인 금지어(결핍어·단정어·예측어) 스캔 0건.
+- `pytest -q` 6/6 통과, `app.py`·`services/personality.py`·`services/explainer.py` 문법 검사 통과.
+- 샘플 출력으로 강점 6줄·성장포인트 4줄·행동 3줄·보완 2줄·용어 2줄이 실제로 채워지는 것을 직접 확인.
+
+### 버전
+
+- `personality_content_version`: 0.1.0 → 0.2.0
+- `copy_version`: 0.1.0 → 0.2.0

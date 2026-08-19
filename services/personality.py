@@ -28,6 +28,7 @@ _FALLBACK = {
         "C": "체계를 정리하고 운영하는",
     },
     "type_description_template": "'{root1}-{root2}형' 성향이 함께 도드라져요. {phrase1} 힘과 {phrase2} 힘을 동시에 갖고 있는 조합이에요.",
+    "type_combo_note_template": "이 두 힘은 서로 다른 장면에서 쓰이는 경우가 많아요. '{phrase1} 일'과 '{phrase2} 일'이 번갈아 필요한 자리에서 이 조합이 자연스럽게 드러날 수 있어요.",
     "strengths_heading": "강점으로 보이는 부분",
     "growth_points_heading": "낯설게 느껴질 수 있는 부분",
     "growth_points_note": "이 부분이 약하다는 뜻이 아니라, 상대적으로 덜 익숙할 수 있다는 뜻이에요.",
@@ -69,15 +70,16 @@ def riasec_type(user_vector: dict[str, float]) -> dict[str, str]:
     description = _CONTENT["type_description_template"].format(
         root1=roots[a1], root2=roots[a2], phrase1=phrases[a1], phrase2=phrases[a2]
     )
-    return {"code": a1 + a2, "name": name, "description": description}
+    combo_note = _CONTENT["type_combo_note_template"].format(phrase1=phrases[a1], phrase2=phrases[a2])
+    return {"code": a1 + a2, "name": name, "description": description, "combo_note": combo_note}
 
 
-def strength_lines(user_vector: dict[str, float], n: int = 3) -> list[str]:
+def strength_lines(user_vector: dict[str, float], n: int = 6) -> list[str]:
     texts = _CONTENT["axis_strength_text"]
     return [texts[a] for a in top_axes(user_vector, n=n) if a in texts]
 
 
-def growth_lines(user_vector: dict[str, float], n: int = 2) -> list[str]:
+def growth_lines(user_vector: dict[str, float], n: int = 4) -> list[str]:
     texts = _CONTENT["axis_growth_text"]
     return [texts[a] for a in bottom_axes(user_vector, n=n) if a in texts]
 

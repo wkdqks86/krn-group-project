@@ -23,20 +23,20 @@ _OCCUPATIONS_PATH = _ROOT / "data" / "occupations.json"
 
 _FALLBACK = {
     "reason_templates": {
-        "1": "‘{label}’ 응답이 가장 도드라졌어요. {job_name}에서는 이 힘이 핵심으로 꼽히는 축이에요 — {example} 같은 일에서 특히 자주 쓰여요.",
-        "2": "‘{label}’ 쪽 응답도 함께 두드러졌어요. {job_name}에서 이 힘은 {example} 업무를 할 때 자주 쓰여요.",
-        "3": "‘{label}’ 성향도 답에 반영됐어요. {job_name} 안에서는 이 힘이 다른 축을 보조하는 역할로 쓰이는 편이에요.",
+        "1": "‘{label}’ 응답이 가장 도드라졌어요. {job_name}에서는 이 힘이 핵심으로 꼽히는 축이에요 — {example} 같은 일에서 특히 자주 쓰여요. 답변 전반에서 이 축의 응답이 뚜렷하게 높게 나타난 결과예요.",
+        "2": "‘{label}’ 쪽 응답도 함께 두드러졌어요. {job_name}에서 이 힘은 {example} 업무를 할 때 자주 쓰여요. 이 축 역시 여러 문항에서 안정적으로 나타난 응답이라 함께 눈여겨볼 만해요.",
+        "3": "‘{label}’ 성향도 답에 반영됐어요. {job_name} 안에서는 이 힘이 다른 축을 보조하는 역할로 쓰이는 편이에요. 단독으로 가장 두드러지진 않아도 앞선 두 힘과 맞물리면 자연스럽게 쓰일 수 있어요.",
     },
-    "caution_template": "이 직군은 ‘{label}’ 쪽을 특히 자주 씁니다. {job_name}의 {example} 같은 공고를 직접 열어서, 실제 업무 강도가 지금 느낌과 맞는지 확인해 보면 좋아요.",
+    "caution_template": "이 직군은 ‘{label}’ 쪽을 특히 자주 씁니다. {job_name}의 {example} 같은 공고를 직접 열어서, 실제 업무 강도가 지금 느낌과 맞는지 확인해 보면 좋아요. 공고의 ‘자격요건’과 ‘우대사항’을 나눠서 보면, 필수로 요구되는 수준인지 아니면 있으면 좋은 정도인지 구분하는 데 도움이 돼요.",
     "caution_fallback": "점수가 높아도 합격 가능성이나 능력을 뜻하진 않아요. 관심이 가면 공고부터 한 번 열어보면 좋아요.",
     "environment_captions": {
-        "face_to_face": "이 직군은 사람을 직접 마주하는 비중이 있는 편이에요. 대면 소통이 잦을 수 있어요.",
-        "team_interaction": "이 직군은 팀과 자주 맞춰가며 일하는 편이에요. 협업 빈도가 잦을 수 있어요.",
-        "change_speed": "이 직군은 상황이 자주 바뀌는 편이에요. 계획을 자주 조정해야 할 수 있어요.",
-        "quantitative_work": "이 직군은 수치·데이터를 다루는 비중이 있는 편이에요. 숫자 기반 업무가 자주 나올 수 있어요.",
+        "face_to_face": "이 직군은 사람을 직접 마주하는 비중이 있는 편이에요. 대면 소통이 잦을 수 있어요. 사람을 상대하는 시간이 부담스럽지 않은지 미리 가늠해보면 좋아요.",
+        "team_interaction": "이 직군은 팀과 자주 맞춰가며 일하는 편이에요. 협업 빈도가 잦을 수 있어요. 혼자 처리하는 시간보다 조율하는 시간이 길 수 있다는 점을 염두에 두면 좋아요.",
+        "change_speed": "이 직군은 상황이 자주 바뀌는 편이에요. 계획을 자주 조정해야 할 수 있어요. 계획이 자주 바뀌는 상황에서 스트레스를 크게 받는 편인지 스스로 점검해보면 좋아요.",
+        "quantitative_work": "이 직군은 수치·데이터를 다루는 비중이 있는 편이에요. 숫자 기반 업무가 자주 나올 수 있어요. 숫자를 다루는 일이 익숙하지 않다면, 관련 툴(엑셀·통계 등) 사용 경험을 먼저 점검해보면 좋아요.",
     },
     "actions_heading": "지금 해볼 수 있는 것",
-    "action_keyword_template": "‘{example}’ 같은 키워드로 공고를 검색해서 실제 업무 범위를 먼저 확인해 보세요.",
+    "action_keyword_template": "‘{example}’ 같은 키워드로 공고를 검색해서 실제 업무 범위를 먼저 확인해 보세요. 공고의 ‘주요업무’ 항목을 보면 실제로 어떤 일을 반복하게 되는지 감을 잡을 수 있어요.",
     "growth_heading": "보완하면 좋은 부분",
     "growth_intro_template": "이 직군에서도 어느 정도 쓰는 힘인데, 지금 답변에서는 상대적으로 덜 드러났어요.",
     "growth_empty": "지금 답변 기준으로는 이 직군에서 특별히 보완할 부분이 두드러지지 않아요.",
@@ -141,22 +141,26 @@ def template_cautions(recommendation: dict[str, Any], context: dict[str, Any] | 
 
 
 def action_lines(recommendation: dict[str, Any]) -> list[str]:
-    """이 직군에서 강점으로 쓰이는 상위 축을 기준으로, 지금 준비할 수 있는 구체적 행동 2가지."""
+    """이 직군에서 강점으로 쓰이는 상위 축(최대 2개)을 기준으로, 지금 준비할 수 있는 구체적 행동을 안내한다."""
     job_family_id = recommendation.get("job_family_id", "")
     component_scores = recommendation.get("component_scores", [])
     lines = []
-    if component_scores:
-        top_axis = component_scores[0]["axis"]
-        action_text = _PERSONALITY_CONTENT["axis_action_text"].get(top_axis)
+    seen_axes = set()
+    for item in component_scores[:2]:
+        axis = item["axis"]
+        if axis in seen_axes:
+            continue
+        action_text = _PERSONALITY_CONTENT["axis_action_text"].get(axis)
         if action_text:
             lines.append(action_text)
+            seen_axes.add(axis)
     keyword = _example_for(job_family_id, 0)
     lines.append(_RESULT_COPY["action_keyword_template"].format(example=keyword))
     return lines
 
 
 def growth_alignment_lines(recommendation: dict[str, Any], user_vector: dict[str, float] | None) -> list[str]:
-    """사용자의 하위 축 중, 이 직군이 실제로 어느 정도 비중 있게 쓰는 축이 있으면 짚어 준다."""
+    """사용자의 하위 축 중, 이 직군이 실제로 어느 정도 비중 있게 쓰는 축을 최대 2개까지 짚어 준다."""
     if not user_vector:
         return [_RESULT_COPY["growth_empty"]]
 
@@ -167,30 +171,33 @@ def growth_alignment_lines(recommendation: dict[str, Any], user_vector: dict[str
     ranked_low = sorted(AXES, key=lambda axis: user_vector.get(axis, 0))
     candidates = [
         axis
-        for axis in ranked_low[:4]
+        for axis in ranked_low[:6]
         if axis_weight.get(axis, 0) >= _GROWTH_WEIGHT_THRESHOLD and axis in growth_text
     ]
     if not candidates:
         return [_RESULT_COPY["growth_empty"]]
 
-    target_axis = max(candidates, key=lambda axis: axis_weight.get(axis, 0))
+    ranked_candidates = sorted(candidates, key=lambda axis: axis_weight.get(axis, 0), reverse=True)
     intro = _RESULT_COPY["growth_intro_template"]
-    label = AXIS_LABELS.get(target_axis, target_axis)
-    return [f"‘{label}’ — {intro} {growth_text[target_axis]}"]
+    lines = []
+    for axis in ranked_candidates[:2]:
+        label = AXIS_LABELS.get(axis, axis)
+        lines.append(f"‘{label}’ — {intro} {growth_text[axis]}")
+    return lines
 
 
 def glossary_lines(recommendation: dict[str, Any]) -> list[str]:
-    """이 직군 대표 직업의 실제 education_hint(팀 검수 스냅샷)를 그대로 인용한다. 새로 지어내지 않는다."""
+    """이 직군 대표 직업 최대 2개의 실제 education_hint(팀 검수 스냅샷)를 그대로 인용한다. 새로 지어내지 않는다."""
     job_family_id = recommendation.get("job_family_id", "")
     occupations = _OCCUPATIONS_BY_FAMILY.get(job_family_id, [])
-    if not occupations:
-        return []
-    occ = occupations[0]
-    hint = occ.get("snapshot_json", {}).get("education_hint")
-    if not hint:
-        return []
     template = _RESULT_COPY["glossary_template"]
-    return [template.format(occupation=occ["name"], hint=hint)]
+    lines = []
+    for occ in occupations[:2]:
+        hint = occ.get("snapshot_json", {}).get("education_hint")
+        if not hint:
+            continue
+        lines.append(template.format(occupation=occ["name"], hint=hint))
+    return lines
 
 
 def explain_recommendation(

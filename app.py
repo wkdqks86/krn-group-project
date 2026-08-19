@@ -442,6 +442,7 @@ elif st.session_state.step == "result":
         with st.container(border=True):
             st.subheader(f"성향 요약 · {profile['type']['name']}")
             st.write(profile["type"]["description"])
+            st.caption(profile["type"]["combo_note"])
             radar = pgo.Figure()
             radar.add_trace(
                 pgo.Scatterpolar(
