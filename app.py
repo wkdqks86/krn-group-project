@@ -321,13 +321,38 @@ if st.session_state.step == "landing":
 elif st.session_state.step == "optional":
     st.markdown('<div class="page-section-chip">기존 자기 이해 정보</div>', unsafe_allow_html=True)
     st.write("선택 입력입니다. 모르면 건너뛰어도 되고, 직군 점수에는 반영되지 않습니다.")
+    saved_traits = st.session_state.get("optional_traits") or {}
+    mbti_options = [
+        "모름 / 건너뛰기",
+        "ISTJ",
+        "ISFJ",
+        "INFJ",
+        "INTJ",
+        "ISTP",
+        "ISFP",
+        "INFP",
+        "INTP",
+        "ESTP",
+        "ESFP",
+        "ENFP",
+        "ENTP",
+        "ESTJ",
+        "ESFJ",
+        "ENFJ",
+        "ENTJ",
+    ]
+    enneagram_options = ["모름 / 건너뛰기", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    mbti_default = saved_traits.get("mbti")
+    enneagram_default = saved_traits.get("enneagram")
     mbti = st.selectbox(
         "MBTI",
-        ["모름 / 건너뛰기", "ISTJ", "ISFJ", "INFJ", "INTJ", "ISTP", "ISFP", "INFP", "INTP", "ESTP", "ESFP", "ENFP", "ENTP", "ESTJ", "ESFJ", "ENFJ", "ENTJ"],
+        mbti_options,
+        index=mbti_options.index(mbti_default) if mbti_default in mbti_options else 0,
     )
     enneagram = st.selectbox(
         "애니어그램",
-        ["모름 / 건너뛰기", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        enneagram_options,
+        index=enneagram_options.index(str(enneagram_default)) if enneagram_default in enneagram_options else 0,
     )
     with st.container(horizontal=True):
         if st.button("이전", icon=":material/arrow_back:"):
@@ -356,6 +381,10 @@ elif st.session_state.step == "diagnose":
     st.markdown('<div class="page-section-chip">답변 진행률</div>', unsafe_allow_html=True)
     st.progress(min(1.0, answered_count / max(total_questions, 1)))
     st.caption(f"{answered_count} / {total_questions}문항 · 한 문항에는 한 가지만 묻습니다.")
+    st.header("핵심 진단")
+    if len(queue) and len(answered_ids) >= len(queue) / 2:
+        st.caption(SCREEN["mid_encourage"])
+    st.caption(SCREEN["skip_hint"])
 
     if current is None:
         go("context")
@@ -438,6 +467,16 @@ elif st.session_state.step == "result":
         st.warning("1위와 2위의 점수 차이가 작습니다. 단정하지 말고 두 직군을 함께 보세요.")
 
     if st.session_state.user_vector:
+        optional_traits = st.session_state.get("optional_traits") or {}
+        trait_labels = []
+        if optional_traits.get("mbti"):
+            trait_labels.append(f"MBTI {optional_traits['mbti']}")
+        if optional_traits.get("enneagram"):
+            trait_labels.append(f"애니어그램 {optional_traits['enneagram']}")
+        if trait_labels:
+            st.caption(
+                SCREEN["optional_traits_note"].format(traits=" · ".join(trait_labels))
+            )
         profile = personality_profile(st.session_state.user_vector)
         with st.container(border=True):
             st.subheader(f"성향 요약 · {profile['type']['name']}")
