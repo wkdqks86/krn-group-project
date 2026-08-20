@@ -42,10 +42,22 @@ _FALLBACK = {
     "growth_empty": "지금 답변 기준으로는 이 직군에서 특별히 보완할 부분이 두드러지지 않아요.",
     "glossary_heading": "공고 볼 때 참고할 점",
     "glossary_template": "‘{occupation}’ 같은 공고에서는 흔히 이런 표현이 나와요 — {hint}",
+    "context_captions": {
+        "work_style_solo_high_team": "업무 방식으로 ‘개인 작업’을 선택하셨어요. {job_name}은 팀 조율이 잦은 편이라, 공고의 ‘근무환경’·‘주요업무’에서 혼자 처리하는 시간과 함께 일하는 시간 비중을 함께 확인해 보면 좋아요.",
+        "work_style_team_low_team": "업무 방식으로 ‘팀 작업’을 선택하셨어요. {job_name}은 혼자 몰입하는 시간 비중이 큰 편일 수 있어요. 공고에서 독립 수행·집중 업무 비중을 같이 보면 좋아요.",
+        "work_style_solo_high_face": "업무 방식으로 ‘개인 작업’을 선택하셨어요. {job_name}은 대면 소통이 잦은 편이라, 실제 현장에서 사람을 마주하는 시간이 어느 정도인지 공고를 통해 확인해 보면 좋아요.",
+        "region_selected": "희망 근무지역({regions})을 입력하셨어요. {job_name} 관련 공고를 볼 때 해당 지역 필터와 채용 규모를 함께 확인해 보면 좋아요.",
+        "education_provided": "최종 학력({education})을 입력하셨어요. {job_name} 공고의 ‘자격요건’에서 학력 조건이 필수인지, 경력·자격으로 대체 가능한지 구분해 보면 좋아요.",
+        "career_fresh": "경력을 ‘신입’으로 입력하셨어요. {job_name} 공고에서 ‘신입’·‘경력무관’ 표기와 실제 요구 역량을 나란히 보면 좋아요.",
+        "career_experienced": "경력을 ‘경험 있음’으로 입력하셨어요. {job_name} 공고의 ‘우대사항’과 ‘필수요건’을 나눠서, 기존 경험이 어디까지 인정될 수 있는지 확인해 보면 좋아요.",
+    },
 }
 
 _ENV_ORDER = ["face_to_face", "team_interaction", "change_speed", "quantitative_work"]
+_ENV_HIGH = 4
+_ENV_LOW = 2
 _GROWTH_WEIGHT_THRESHOLD = 0.06
+_CAUTION_LINE_LIMIT = 3
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -116,6 +128,55 @@ def template_reasons(recommendation: dict[str, Any]) -> list[str]:
     return lines
 
 
+def _context_caution_lines(
+    context: dict[str, Any] | None,
+    job_name: str,
+    env: dict[str, Any],
+) -> tuple[list[str], bool]:
+    """현실 조건 입력을 주의 문구로 변환한다. (lines, 근무환경 캡션 중복 여부)."""
+    if not context:
+        return [], False
+
+    captions = _RESULT_COPY.get("context_captions", {})
+    lines: list[str] = []
+    covers_environment = False
+
+    work_style = context.get("work_style")
+    team_level = env.get("team_interaction", 0)
+    face_level = env.get("face_to_face", 0)
+
+    if work_style == "개인 작업 선호" and team_level >= _ENV_HIGH:
+        lines.append(captions["work_style_solo_high_team"].format(job_name=job_name))
+        covers_environment = True
+    elif work_style == "팀 작업 선호" and team_level <= _ENV_LOW:
+        lines.append(captions["work_style_team_low_team"].format(job_name=job_name))
+        covers_environment = True
+
+    if work_style == "개인 작업 선호" and face_level >= _ENV_HIGH and len(lines) < 2:
+        lines.append(captions["work_style_solo_high_face"].format(job_name=job_name))
+        covers_environment = True
+
+    education = context.get("education")
+    if education and len(lines) < 2:
+        lines.append(
+            captions["education_provided"].format(education=education, job_name=job_name)
+        )
+
+    career = context.get("career")
+    if career == "신입" and len(lines) < 2:
+        lines.append(captions["career_fresh"].format(job_name=job_name))
+    elif career == "경험 있음" and len(lines) < 2:
+        lines.append(captions["career_experienced"].format(job_name=job_name))
+
+    regions = [region for region in (context.get("region") or []) if region != "상관없음"]
+    if regions and len(lines) < 2:
+        lines.append(
+            captions["region_selected"].format(regions=", ".join(regions), job_name=job_name)
+        )
+
+    return lines[:2], covers_environment
+
+
 def template_cautions(recommendation: dict[str, Any], context: dict[str, Any] | None = None) -> list[str]:
     template = _RESULT_COPY["caution_template"]
     job_name = recommendation.get("name", "이 직군")
@@ -126,18 +187,22 @@ def template_cautions(recommendation: dict[str, Any], context: dict[str, Any] | 
         lines.append(template.format(label=item["label"], job_name=job_name, example=example))
 
     env = _FAMILY_CONTEXT.get(job_family_id, {}).get("environment_json", {})
-    env_captions = _RESULT_COPY["environment_captions"]
-    top_env_axis = max(
-        (axis for axis in _ENV_ORDER if env.get(axis, 0) >= 4),
-        key=lambda axis: env.get(axis, 0),
-        default=None,
-    )
-    if top_env_axis and top_env_axis in env_captions:
-        lines.append(env_captions[top_env_axis])
+    context_lines, skip_env_caption = _context_caution_lines(context, job_name, env)
+    lines.extend(context_lines)
+
+    if not skip_env_caption:
+        env_captions = _RESULT_COPY["environment_captions"]
+        top_env_axis = max(
+            (axis for axis in _ENV_ORDER if env.get(axis, 0) >= _ENV_HIGH),
+            key=lambda axis: env.get(axis, 0),
+            default=None,
+        )
+        if top_env_axis and top_env_axis in env_captions:
+            lines.append(env_captions[top_env_axis])
 
     if not lines:
         lines.append(_RESULT_COPY["caution_fallback"])
-    return lines[:2]
+    return lines[:_CAUTION_LINE_LIMIT]
 
 
 def action_lines(recommendation: dict[str, Any]) -> list[str]:
