@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import plotly.graph_objects as pgo
 import streamlit as st
 
 from domain.branching import (
@@ -13,6 +14,7 @@ from domain.branching import (
 )
 from domain.scoring import ENGINE_VERSION, rank_job_families
 from services.explainer import explain_recommendation
+from services.personality import personality_profile
 from services.work24 import job_family_detail
 
 ROOT = Path(__file__).resolve().parent
@@ -322,13 +324,38 @@ if st.session_state.step == "landing":
 elif st.session_state.step == "optional":
     st.markdown('<div class="page-section-chip">기존 자기 이해 정보</div>', unsafe_allow_html=True)
     st.write("선택 입력입니다. 모르면 건너뛰어도 되고, 직군 점수에는 반영되지 않습니다.")
+    saved_traits = st.session_state.get("optional_traits") or {}
+    mbti_options = [
+        "모름 / 건너뛰기",
+        "ISTJ",
+        "ISFJ",
+        "INFJ",
+        "INTJ",
+        "ISTP",
+        "ISFP",
+        "INFP",
+        "INTP",
+        "ESTP",
+        "ESFP",
+        "ENFP",
+        "ENTP",
+        "ESTJ",
+        "ESFJ",
+        "ENFJ",
+        "ENTJ",
+    ]
+    enneagram_options = ["모름 / 건너뛰기", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    mbti_default = saved_traits.get("mbti")
+    enneagram_default = saved_traits.get("enneagram")
     mbti = st.selectbox(
         "MBTI",
-        ["모름 / 건너뛰기", "ISTJ", "ISFJ", "INFJ", "INTJ", "ISTP", "ISFP", "INFP", "INTP", "ESTP", "ESFP", "ENFP", "ENTP", "ESTJ", "ESFJ", "ENFJ", "ENTJ"],
+        mbti_options,
+        index=mbti_options.index(mbti_default) if mbti_default in mbti_options else 0,
     )
     enneagram = st.selectbox(
         "애니어그램",
-        ["모름 / 건너뛰기", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        enneagram_options,
+        index=enneagram_options.index(str(enneagram_default)) if enneagram_default in enneagram_options else 0,
     )
     with st.container(horizontal=True):
         if st.button("이전", icon=":material/arrow_back:"):
@@ -358,8 +385,6 @@ elif st.session_state.step == "diagnose":
     st.progress(min(1.0, answered_count / max(total_questions, 1)))
     st.caption(f"{answered_count} / {total_questions}문항 · 한 문항에는 한 가지만 묻습니다.")
     st.header("핵심 진단")
-    st.progress(min(1.0, len(answered_ids) / max(len(queue), 1)))
-    st.caption(f"{len(answered_ids)} / 약 {len(queue)}문항 · 한 문항에는 한 가지만 묻습니다.")
     if len(queue) and len(answered_ids) >= len(queue) / 2:
         st.caption(SCREEN["mid_encourage"])
     st.caption(SCREEN["skip_hint"])
@@ -446,18 +471,78 @@ elif st.session_state.step == "result":
     if st.session_state.recommendations and st.session_state.recommendations[0].get("close_score"):
         st.warning(SCREEN["close_score_note"])
 
+    if st.session_state.user_vector:
+        optional_traits = st.session_state.get("optional_traits") or {}
+        trait_labels = []
+        if optional_traits.get("mbti"):
+            trait_labels.append(f"MBTI {optional_traits['mbti']}")
+        if optional_traits.get("enneagram"):
+            trait_labels.append(f"애니어그램 {optional_traits['enneagram']}")
+        if trait_labels:
+            st.caption(
+                SCREEN["optional_traits_note"].format(traits=" · ".join(trait_labels))
+            )
+        profile = personality_profile(st.session_state.user_vector)
+        with st.container(border=True):
+            st.subheader(f"성향 요약 · {profile['type']['name']}")
+            st.write(profile["type"]["description"])
+            st.caption(profile["type"]["combo_note"])
+            radar = pgo.Figure()
+            radar.add_trace(
+                pgo.Scatterpolar(
+                    r=profile["radar"]["values"],
+                    theta=profile["radar"]["axes"],
+                    fill="toself",
+                    name="내 프로파일",
+                )
+            )
+            radar.update_layout(
+                polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
+                showlegend=False,
+                margin=dict(l=20, r=20, t=20, b=20),
+            )
+            st.plotly_chart(radar, use_container_width=True)
+            col_strength, col_growth = st.columns(2)
+            with col_strength:
+                st.write(f"**{profile['strengths_heading']}**")
+                for line in profile["strengths"]:
+                    st.write(f"- {line}")
+            with col_growth:
+                st.write(f"**{profile['growth_points_heading']}**")
+                st.caption(profile["growth_points_note"])
+                for line in profile["growth_points"]:
+                    st.write(f"- {line}")
+
     for item in st.session_state.recommendations:
-        explained = explain_recommendation(item, st.session_state.context)
+        explained = explain_recommendation(
+            item, st.session_state.context, user_vector=st.session_state.user_vector
+        )
         with st.container(border=True):
             st.subheader(f"{item['rank']}. {item['name']}")
             st.metric("현재 프로파일 기준 상대 적합도", f"{item['total']:.0f}/100")
             st.caption(copy["result"]["band_labels"].get(item["band"], item["band"]))
-            st.write(copy["result"]["reasons_heading"])
+
+            st.markdown(f"**{copy['result']['reasons_heading']}**")
             for line in explained["reasons"]:
                 st.write(f"- {line}")
-            st.write(copy["result"]["cautions_heading"])
+
+            st.markdown(f"**{copy['result']['cautions_heading']}**")
             for line in explained["cautions"]:
                 st.write(f"- {line}")
+
+            st.markdown(f"**{copy['result']['actions_heading']}**")
+            for line in explained["actions"]:
+                st.write(f"- {line}")
+
+            st.markdown(f"**{copy['result']['growth_heading']}**")
+            for line in explained["growth"]:
+                st.write(f"- {line}")
+
+            if explained["glossary"]:
+                st.markdown(f"**{copy['result']['glossary_heading']}**")
+                for line in explained["glossary"]:
+                    st.write(f"- {line}")
+
             if st.button("연관 직업 보기", key=f"open_{item['job_family_id']}", icon=":material/work:"):
                 st.session_state.selected_job_id = item["job_family_id"]
                 go("detail")
@@ -498,9 +583,16 @@ elif st.session_state.step == "detail":
                     st.caption(f"공식 직업명: {snapshot['official_name']}")
                 st.write(snapshot["summary"])
                 st.caption(" · ".join(snapshot["typical_tasks"]))
+                if snapshot.get("fit_hint"):
+                    st.write(snapshot["fit_hint"])
                 st.caption(snapshot["education_hint"])
+
                 st.caption(snapshot.get("source", ""))
                 st.link_button("직업정보 보러가기", occupation["source_url"], icon=":material/open_in_new:")
+
+                st.link_button("임금직업포털에서 찾아보기", occupation["source_url"], icon=":material/open_in_new:")
+                st.caption(f"검색창에 '{occupation['name']}'을(를) 입력해서 찾아보세요.")
+
         if st.button("결과로 돌아가기", icon=":material/arrow_back:"):
             go("result")
             st.rerun()

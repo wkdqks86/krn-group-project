@@ -87,14 +87,186 @@ PRD v2.0을 기준으로 한 초기 세팅 기록입니다. 회의에서 바뀌�
 
 - `question_version`: 0.1.1
 
+
 ## 2026-08-18 · P5 직업 스냅샷 공식 연결 (v0.2.0)
 
 ### 결정
 
 - 24개 중 18개 직업을 한국고용정보원 직업정보 모바일 상세(`m.work.go.kr`, `jobNm` 6자리)에 연결한다.
 - 교육기획 담당자(O0401)는 교재·교구 및 이러닝교육전문가(215105)로 매핑한다.
-- 직무개요 원문은 복사하지 않고 한 줄 요약으로 다시 쓴다. J02 연구·공학, J05 보건·의료 6개는 팀 초안으로 둔다.
+- 직무개요 원문은 복사하지 않고 한 줄 요약으로 다시 쓴다. J02 연구·공학, J05 보건·의료 10개는 팀 초안으로 둔다.
+
+## 2026-08-18 · P2 연관 직업 콘텐츠 보강 (v0.1.1)
+
+### 결정
+
+- `data/occupations.json`의 8개 직군 × 3개(총 24개) 연관 직업을 유지하되, 내용을 두 겹으로 보강.
+  - `summary`: 한 줄 요약을 조금 더 구체적으로(무엇을, 어떻게 하는지 한 절 추가).
+  - `fit_hint`(신규 필드): "~하면 잘 맞을 수 있어요" 톤으로, 해당 직업의 실제 업무 특성과 이어지는 성향 힌트 한 줄. 결핍어·단정어·예측어 금지 검증 통과.
+- `app.py` detail 화면에 `fit_hint` 렌더링 한 줄 추가(있을 때만 표시, 로직 변경 없음).
+
+### 이유
+
+- 사용자가 detail 화면에서 "콘텐츠가 너무 단순하다"고 지적. 원인은 스키마 자체가 요약 1줄 + 업무 키워드 3개뿐이었기 때문(전 직군 공통, 버그 아님).
+- 직업 개수(3개)를 늘리는 대신, 있는 3개의 내용 밀도를 높이는 쪽으로 범위를 좁힘(팀 확인).
+
+### 확인 필요(P5에게 별도 전달)
+
+- `services/work24.py`가 `WORK24_API_KEY`를 읽는데 `.streamlit/secrets.toml.example`은 `WORK24_JOB_INFO_KEY`로 되어 있어, 실제 키를 넣어도 라이브 API가 절대 켜지지 않는 이름 불일치 버그 발견. P5 확인 필요.
+- `external_code`가 전부 빈 문자열이라 "직업정보 보러가기" 링크가 항상 work.go.kr 홈페이지로만 연결됨. 실제 직업 코드가 없어 임의로 채우지 않음(허위 링크 방지).
+
+### 검증
+
+- JSON 유효성 확인, 금지어(결핍어·단정어·예측어) 0건, `pytest -q` 6/6 통과.
+
+### 버전
+
+- `occupation_version`: 0.1.1
+
+## 2026-08-19 · P2 결과 콘텐츠 대폭 확충 (성향 프로파일 신설 + 연관 직업 확대)
+
+### 결정
+
+- **성향 프로파일 신설** (`services/personality.py` + `data/personality_content.json`, `app.py` result 화면 상단): 문항 수는 늘리지 않고(28문항 유지), 이미 계산된 12축 `user_vector`를 더 풍부하게 보여주는 3종 콘텐츠 추가.
+  - 12축 레이더차트(plotly `Scatterpolar`).
+  - 유형 요약: RIASEC 6축 중 상위 2개를 조합한 이름(예: "탐구-사회형") + 설명 한 줄. 30개 조합을 일일이 하드코딩하지 않고, `riasec_root`(6개) × `riasec_phrase`(6개) 조합을 코드로 합성해 생성(유지보수 부담을 줄이기 위한 설계 선택).
+  - 강점 3개 / 낯설 수 있는 부분(성장포인트) 2개: 12축 전체에 대해 축별로 미리 써둔 서술(`axis_strength_text`/`axis_growth_text`)에서 사용자의 상위 3축·하위 2축을 뽑아 노출.
+- `requirements.txt`에 `plotly>=5.20.0` 추가(레이더차트 렌더링용, 기존엔 streamlit/requests/pytest만 있었음).
+- **연관 직업 확대**: `data/occupations.json`을 직군당 3개(총 24개) → 직군당 5개(총 40개)로 확대. 기존 3개 스키마(summary/typical_tasks/fit_hint/education_hint)를 그대로 따름. `occupation_version` 0.1.1 → 0.2.0.
+- 문항(`questions.json`)은 이번 확충 범위에서 제외(사용자 확인, 신뢰도보다 응답 피로 방지 우선).
+
+### 이유
+
+- 사용자가 결과 화면(성향분석·직업추천) 콘텐츠가 전반적으로 부실하다고 지적. 점수는 이미 12축 전체가 계산되는데 화면엔 top3 문장 몇 줄만 노출되고 있었음 — 계산은 있는데 보여주는 게 얇았던 문제.
+- "성향 프로파일"을 결과 화면 최상단(직군 카드 리스트보다 위)에 배치해, 사용자가 자기 자신을 먼저 이해하고 그 다음 직군을 보는 흐름으로 구성.
+
+### 지켜야 할 것 확인
+
+- `domain/scoring.py`(채점 로직)는 변경하지 않음 — `personality.py`는 이미 계산된 `user_vector`를 순위만 매겨 문구에 연결하는 후처리 계층.
+- 함수 시그니처: `personality_profile(user_vector)` 단일 진입점, `explain_recommendation`/`template_reasons` 등 기존 함수는 미변경.
+- 톤앤보이스 금지어 재확인 과정에서 강점/성장포인트 문구 2곳에서 "부족" 발견 → 수정 완료(`data/personality_content.json`의 I축·logical축 growth text).
+
+### 검증
+
+- JSON 유효성(occupations.json 40개 전량, personality_content.json), 직군당 5개 균등 분포 확인.
+- 금지어(결핍어·단정어·예측어) 스캔 0건(occupations.json 40개 + personality_content.json 24개 텍스트 전량).
+- `services/personality.py` 단독 실행 테스트: 샘플 벡터로 유형명 "탐구-사회형" 등 정상 생성 확인.
+- `pytest -q` 6/6 통과(기존 채점 회귀 테스트 영향 없음).
+- `app.py` 문법 검사(`ast.parse`) 통과. Streamlit 실제 구동 화면은 로컬에서 `streamlit run app.py`로 직접 확인 필요(이 환경에서는 서버 구동 불가).
+
 
 ### 버전
 
 - `occupation_version`: 0.2.0
+
+- `personality_content_version`: 0.1.0
+
+## 2026-08-19 · P2 직군 가중치 조정 v0.1.1 재반영 (연구 R↓, 예술 의사소통↓)
+
+### 결정
+
+- `data/job_profiles.json`의 J02(연구·공학기술), J06(예술·디자인) 가중치를 아래처럼 조정. 값 자체는 이전(2026-08-18) 항목에서 이미 합의된 내용과 동일.
+  - J02: R 0.16→0.08, I 0.16→0.18, problem_solving 0.16→0.18, persistence 0.08→0.12
+  - J06: communication 0.16→0.10, A 0.22→0.24, problem_solving 0.08→0.12
+- `job_profile_version`: 0.1.0 → 0.1.1
+
+### 이유(재작업 배경)
+
+- 같은 내용으로 브랜치를 두 번 만들었으나(v0.1.1, v0.1.2) 모두 최신 main이 아닌 예전 지점에서 갈라져 실제로는 반영되지 않았거나 PR 병합 시 다른 파일을 손상시킬 뻔했음. 이번엔 `origin/main`(PR #5까지 반영된 최신 지점)을 직접 기준점으로 삼아 이 두 파일만 수정.
+
+### 검증
+
+- 8개 직군 `axis_weight` 합 전부 1.0 확인, `pytest -q` 6/6 통과(J03 최상위 회귀 테스트 영향 없음).
+
+## 2026-08-19 · P2 결과 근거·주의 문구 심층화 (같은 축도 직군마다 다른 문장)
+
+### 결정
+
+- `services/explainer.py`가 `data/job_profiles.json`의 `example_occupations`·`environment_json`을 함께 읽어, 근거(reasons)·주의(cautions) 문장에 실제 직군 맥락을 넣도록 재작성. 점수·순위 계산은 손대지 않음(후처리 계층 유지).
+- 근거 문장: 기존엔 top3 축 모두 `'{label}' 쪽으로 답이 기울었어요. 이 직군이 그 힘을 오래 쓰는 자리예요.` 한 템플릿을 label만 바꿔 반복. 이제 순위(1/2/3위)별로 다른 문장 구조를 쓰고, 직군명 + 대표 직업(`example_occupations`)을 실제로 인용해 같은 축이라도 직군마다 문장이 달라짐.
+- 주의 문장: 기존 `work_style == 개인 작업 선호` && 4개 직군 하드코딩 allowlist를 제거. 대신 `environment_json`(대면 비중·팀 협업·변화 속도·정량 업무, 1~5점)에서 4점 이상인 항목을 실제로 찾아 그 직군에 맞는 문장을 붙이도록 데이터 기반으로 교체.
+- `data/copy.json`: `reason_template`(단일) → `reason_templates`(1/2/3위별 3종)로 구조 변경, `work_style_caution` 제거, `environment_captions`(4종) 신설.
+
+### 이유
+
+- 사용자가 결과 화면 캡처를 보고 "메시지가 너무 단순하고 중복된다"고 재지적. 8월 18일자 `p2-handoff-result-reason-spec.md`에서 이미 진단했던 문제(축 이름만 바뀌는 flat 템플릿)를 직접 해결.
+
+### 검증
+
+- 상위/하위 극단 벡터로 8개 직군 전수 생성 후 금지어(결핍어·단정어·예측어) 스캔 0건.
+- `pytest -q` 6/6 통과(엔진·분기 영향 없음). `explain_recommendation` 시그니처 불변.
+
+## 2026-08-19 · P2 직군 카드 5-섹션 구조화 (적합신호·확인점·행동·보완·용어)
+
+### 결정
+
+- 사용자가 "체계적인 분석과 조언이 더 필요하다"고 재차 지적. 결과 화면 직군 카드를 문장 나열형에서 소제목 5개 섹션으로 재구성.
+  1. 왜 이 직군을 더 볼까요 (기존 reasons, 유지)
+  2. 무엇을 확인할까요 (기존 cautions, 유지)
+  3. **지금 해볼 수 있는 것**(신규, `action_lines`): 이 직군에서 가장 비중 큰 축에 대응하는 준비 행동 1개(`personality_content.json`의 `axis_action_text` 12종 신설) + 대표 직업 키워드로 공고 검색을 권하는 문장 1개.
+  4. **보완하면 좋은 부분**(신규, `growth_alignment_lines`): 사용자의 하위 축 중 "이 직군이 실제로 어느 정도 비중 있게 쓰는 축"(axis_weight ≥ 0.06)이 있으면, 이미 만들어둔 `personality_content.json`의 `axis_growth_text`를 재사용해 짚어 줌. 겹치는 게 없으면 `growth_empty` 문구.
+  5. **공고 볼 때 참고할 점**(신규, `glossary_lines`): 그 직군 대표 직업의 실제 `occupations.json` `education_hint`를 그대로 인용(새로 지어내지 않음).
+- `explain_recommendation`에 `user_vector` 선택 인자 추가(기본값 None → 기존 호출부 하위 호환, growth 섹션만 개인화에 사용). `app.py`가 `st.session_state.user_vector`를 넘기도록 연결.
+
+### 이유
+
+- 두 차례에 걸쳐 "메시지가 너무 단순/부실하다"는 지적을 받음. 1차 수정(직군별 문장 차별화)만으로는 부족했고, 사용자가 원한 건 "사실 나열"이 아니라 "무엇을 할지"까지 이어지는 구조. 이미 갖고 있던 데이터(`axis_weight`, `axis_growth_text`, `occupations.json`의 `education_hint`)를 재사용해 새로 지어내는 내용을 최소화.
+
+### 검증
+
+- 12축 무작위 벡터 30회 × 8개 직군 전수(240개 케이스)에 대해 reasons·cautions·actions·growth·glossary 전 라인 금지어(결핍어·단정어·예측어) 스캔 0건.
+- `pytest -q` 6/6 통과, `app.py` 문법 검사 통과.
+
+## 2026-08-19 · P2 "직업정보 보러가기" 링크를 임금직업포털로 교체
+
+### 결정
+
+- `data/occupations.json` 40개 항목의 `source_url`을 전부 `https://www.work.go.kr/`(단순 홈페이지)에서 `https://www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do`(임금직업포털 한국직업사전 검색 페이지)로 교체.
+- `app.py` detail 화면 버튼 라벨을 "직업정보 보러가기" → "임금직업포털에서 찾아보기"로 바꾸고, 바로 아래에 `"검색창에 '{직업명}'을(를) 입력해서 찾아보세요."` 캡션을 추가.
+
+### 이유
+
+- 기존 work.go.kr 한국직업정보시스템(구 워크넷 직업정보)은 이미 폐지되어 검색 결과가 0건으로 뜨는 것을 직접 확인함. 정부가 이 기능을 임금직업포털(wagework.go.kr)로 이전했다는 사실도 해당 사이트 안내 문구로 확인.
+- 직업명별 상세 페이지로 바로 연결되는(예: `?seq=1114`류) URL은 직업마다 부여된 내부 코드(seq)가 필요한데, 이 코드를 직업명만으로 확정할 근거 자료가 없어 추측으로 채우면 날조가 됨(팀 원칙 위반). 검색 결과 페이지 자체도 새 사이트는 완전히 JS 렌더링이라 키워드를 URL 파라미터로 미리 채워 넣는 것도 불가능함을 여러 파라미터명(`srchKywd` 등)으로 직접 검증.
+- 따라서 "직업명을 URL에 미리 채워 넣는 딥링크"는 검증 불가로 포기하고, 대신 실제 운영 중인 정부 공식 사이트의 검색 진입점으로 연결한 뒤 사용자가 직업명을 직접 입력하도록 안내하는 방식을 택함. 링크 자체는 100% 검증됨(실제 접속 확인), 직업명 자동 채움만 없음.
+
+### 검증
+
+- 새 URL 실제 접속 확인(`www.wagework.go.kr/pt/a/d/retrieveOccpSrch.do` 응답에 "키워드 검색" UI 존재).
+- `pytest -q` 6/6 통과, `app.py` 문법 검사 통과, 새로 추가한 문구 금지어(결핍어·단정어·예측어) 스캔 0건.
+
+### 버전
+
+- `occupation_version`: 0.2.0 (source_url 값만 교체, 스키마·개수 변경 없음)
+
+## 2026-08-19 · P2 성향 프로파일·직군 카드 설명 밀도 2배 확장
+
+### 결정
+
+- 사용자가 "현재 검사 후 제공되는 설명의 밀도와 깊이를 2배로" 요청. 성향 프로파일 화면과 직군 카드 5-섹션 양쪽을, 문장 자체를 더 길고 구체적으로 만드는 것 + 항목(불릿) 개수를 늘리는 것 둘 다로 확장.
+- **성향 프로파일** (`data/personality_content.json` → 0.2.0, `services/personality.py`):
+  - `axis_strength_text`·`axis_growth_text` 12개 축 전부에 세 번째 문장(구체적 행동 예시/대처 예시)을 추가해 각 항목을 2문장→3문장으로 확장.
+  - `strength_lines` 기본 개수 3→6, `growth_lines` 기본 개수 2→4로 확대(12축 중 겹치지 않게 6+4=10축까지 노출).
+  - `type_combo_note_template` 신규: 유형 요약 설명 아래에 "두 힘이 실제로 어떤 자리에서 번갈아 드러나는지"를 덧붙이는 문장 추가(축별 고유 조합 데이터 없이 기존 `riasec_phrase`를 재조합해 생성 — 새 사실을 지어내지 않음).
+- **직군 카드 5-섹션** (`data/copy.json` → 0.2.0, `services/explainer.py`):
+  - 근거(reasons) 3종 템플릿, 주의(caution_template), 근무환경 캡션(`environment_captions`) 4종, 행동 키워드 템플릿(`action_keyword_template`)에 각각 두 번째 문장(구체적 확인 포인트·체크리스트성 조언)을 추가.
+  - `action_lines`: 상위 축 1개 → 최대 2개(component_scores 상위 2개)의 `axis_action_text`를 모두 반영해 행동 제안을 2~3줄로 확대.
+  - `growth_alignment_lines`: 후보 1개 → 최대 2개 반환(가중치 상위 순, 기존 임계값·후보 탐색 범위는 top4→top6으로만 넓힘 — 판정 기준 자체는 불변).
+  - `glossary_lines`: 대표 직업 1개 → 최대 2개의 실제 `education_hint`를 그대로 인용(occupations.json 기존 데이터 재사용, 새로 지어내지 않음).
+- `domain/scoring.py`는 이번에도 손대지 않음 — 순위·점수 계산 로직 불변, 위 확장은 전부 explainer/personality 레이어의 문구·개수 조정.
+
+### 이유
+
+- 사용자가 "밀도·깊이 2배"를 명시적으로 요청하며 적용 범위(성향 프로파일 + 직군 카드)와 방향(문장 길이 + 항목 개수 둘 다)을 직접 지정.
+- 점수 계산 로직을 건드리지 않고도 늘릴 수 있는 부분(component_scores 상위 2개, occupations.json의 직군당 5개 중 상위 2개 등 이미 계산·수집된 데이터)만 활용해 날조 없이 확장.
+
+### 검증
+
+- 12축 무작위 벡터 30회 × 8개 직군 전수에 대해 성향 프로파일 5개 필드 + 직군 카드 5-섹션 전 라인 금지어(결핍어·단정어·예측어) 스캔 0건.
+- `pytest -q` 6/6 통과, `app.py`·`services/personality.py`·`services/explainer.py` 문법 검사 통과.
+- 샘플 출력으로 강점 6줄·성장포인트 4줄·행동 3줄·보완 2줄·용어 2줄이 실제로 채워지는 것을 직접 확인.
+
+### 버전
+
+- `personality_content_version`: 0.1.0 → 0.2.0
+- `copy_version`: 0.1.0 → 0.2.0
