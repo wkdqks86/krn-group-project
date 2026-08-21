@@ -862,45 +862,61 @@ if st.session_state.step == "landing":
     )
 
     st.markdown('<div class="landing-section-chip">시작 전 확인</div>', unsafe_allow_html=True)
+
     with st.container(border=True):
         st.markdown(
-            f"""
-            <div class="landing-disclaimer-box">
-              <p class="landing-disclaimer-text">{escape_html(DISCLAIMER)}</p>
-            </div>
-            <p class="landing-note">결과는 합격 가능성·능력 판정이 아닌, 탐색 우선순위 안내입니다.</p>
-            <p class="landing-consent-heading">아래 내용을 확인한 뒤 체크하고 진단을 시작해 주세요.</p>
-            """,
-            unsafe_allow_html=True,
-        )
-        with st.container(horizontal=True, horizontal_alignment="center", gap=None):
-            st.checkbox(
-                "안내를 확인했고, 결과가 합격·능력 판정이 아님을 이해합니다.",
-                key="consent",
-                width="content",
-                wrap=False,
-            )
-        st.button(
-            "진단 시작",
-            type="primary",
-            icon=":material/play_arrow:",
-            disabled=not st.session_state.consent,
-            on_click=go,
-            args=("optional",),
-            use_container_width=True,
+        f"""
+        <div class="landing-disclaimer-box">
+        <p class="landing-disclaimer-text">{escape_html(DISCLAIMER)}</p>
+        </div>
+        <p class="landing-note">결과는 합격 가능성·능력 판정이 아닌, 탐색 우선순위 안내입니다.</p>
+        <p class="landing-consent-heading">아래 내용을 확인한 뒤 체크하고 진단을 시작해 주세요.</p>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    with st.container(
+        horizontal=True,
+        horizontal_alignment="center",
+        gap=None,
+    ):
+        st.checkbox(
+            "안내를 확인했고, 결과가 합격·능력 판정이 아님을 이해합니다.",
+            key="consent",
+            width="content",
+            wrap=False,
         )
 
+    st.button(
+        "진단 시작",
+        type="primary",
+        icon=":material/play_arrow:",
+        disabled=not st.session_state.consent,
+        on_click=go,
+        args=("optional",),
+        use_container_width=True,
+    )
+
+
 elif st.session_state.step == "optional":
-    st.markdown('<div class="page-section-chip">기존 자기 이해 정보</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="page-section-chip">기존 자기 이해 정보</div>',
+        unsafe_allow_html=True,
+    )
+
     st.markdown(
         """
         <div class="optional-note-box">
-          <p class="optional-note-text">선택 입력입니다. 모르면 건너뛰어도 되고, 직군 점수에는 반영되지 않습니다.</p>
+          <p class="optional-note-text">
+            선택 입력입니다. 모르면 건너뛰어도 되고, 직군 점수에는 반영되지 않습니다.
+          </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
     saved_traits = st.session_state.get("optional_traits") or {}
+
     mbti_options = [
         "모름 / 건너뛰기",
         "ISTJ",
@@ -920,7 +936,20 @@ elif st.session_state.step == "optional":
         "ENFJ",
         "ENTJ",
     ]
-    enneagram_options = ["모름 / 건너뛰기", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+    enneagram_options = [
+        "모름 / 건너뛰기",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+    ]
+
     mbti_default = saved_traits.get("mbti")
     enneagram_default = saved_traits.get("enneagram")
 
@@ -968,6 +997,7 @@ elif st.session_state.step == "diagnose":
         "sjt_common": "공통 상황판단",
         "sjt_followup": "후속 상황판단",
     }
+
 
     if current is None:
         go("context")
@@ -1249,46 +1279,55 @@ elif st.session_state.step == "result":
         explained = explain_recommendation(
             item, st.session_state.context, user_vector=st.session_state.user_vector
         )
-        rank_style = RESULT_RANK_STYLES.get(item["rank"], {"emoji": "📌", "accent": "#0b5cab", "bg": "#ffffff"})
+        rank_style = RESULT_RANK_STYLES.get(
+            item["rank"],
+            {"emoji": "📌", "accent": "#0b5cab", "bg": "#ffffff"},
+        )
         band_label = copy["result"]["band_labels"].get(item["band"], item["band"])
+
         st.markdown(
             f"""
             <div class="result-card" style="background: {rank_style['bg']}; border-color: {rank_style['accent']}55;">
-              <div class="result-card-head">
+            <div class="result-card-head">
                 <span class="result-rank-badge">{rank_style['emoji']} {item['rank']}. {item['name']}</span>
                 <span class="result-score-pill">{item['total']:.0f}/100</span>
-              </div>
-              <span class="result-band-chip" style="background:{rank_style['accent']}22;color:{rank_style['accent']};">
+            </div>
+            <span class="result-band-chip" style="background:{rank_style['accent']}22;color:{rank_style['accent']};">
                 {band_label}
-              </span>
+            </span>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
         render_result_section(
             "reasons",
             copy["result"]["reasons_heading"],
             explained["reasons"],
             "💡",
         )
+
         render_result_section(
             "cautions",
             copy["result"]["cautions_heading"],
             explained["cautions"],
             "🚩",
         )
+
         render_result_section(
             "actions",
             copy["result"]["actions_heading"],
             explained["actions"],
             "🚀",
         )
+
         render_result_section(
             "growth",
             copy["result"]["growth_heading"],
             explained["growth"],
             "📈",
         )
+
         if explained["glossary"]:
             render_result_section(
                 "glossary",
@@ -1301,13 +1340,11 @@ elif st.session_state.step == "result":
             "연관 직업 보기",
             key=f"open_{item['job_family_id']}",
             icon=":material/work:",
-            type="primary",
             use_container_width=True,
         ):
             st.session_state.selected_job_id = item["job_family_id"]
             go("detail")
             st.rerun()
-        st.divider()
 
     with st.container(horizontal=True):
         if st.button("이전", icon=":material/arrow_back:"):
@@ -1350,30 +1387,55 @@ elif st.session_state.step == "detail":
             typical_tasks = snapshot.get("typical_tasks") or []
             fit_hint = snapshot.get("fit_hint") or ""
             education_hint = snapshot.get("education_hint") or ""
+            official_name = snapshot.get("official_name") or ""
+            source = snapshot.get("source") or ""
+
+            official_name_html = (
+                f"<p class='detail-occupation-hint'>공식 직업명: {escape_html(official_name)}</p>"
+                if official_name
+                else ""
+            )
+
             fit_html = (
                 f"<p class='detail-occupation-hint'>🌿 {escape_html(fit_hint)}</p>"
                 if fit_hint
                 else ""
             )
+
+            source_html = (
+                f"<p class='detail-occupation-hint'>출처: {escape_html(source)}</p>"
+                if source
+                else ""
+            )
+
             st.markdown(
                 f"""
                 <div class="detail-occupation-card">
-                  <p class="detail-occupation-name">✨ {escape_html(occupation["name"])}</p>
-                  <p class="detail-occupation-summary">{escape_html(snapshot.get("summary", ""))}</p>
-                  <p class="detail-occupation-hint">• {escape_html(" · ".join(typical_tasks))}</p>
-                  {fit_html}
-                  <p class="detail-occupation-hint">📚 {escape_html(education_hint)}</p>
+                <p class="detail-occupation-name">✨ {escape_html(occupation["name"])}</p>
+                {official_name_html}
+                <p class="detail-occupation-summary">{escape_html(snapshot.get("summary", ""))}</p>
+                <p class="detail-occupation-hint">• {escape_html(" · ".join(typical_tasks))}</p>
+                {fit_html}
+                <p class="detail-occupation-hint">📚 {escape_html(education_hint)}</p>
+                {source_html}
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+
             st.link_button(
-                "임금직업포털에서 찾아보기",
+                f"{occupation['name']} 직업정보 보러가기",
                 occupation["source_url"],
                 icon=":material/open_in_new:",
                 use_container_width=True,
             )
-        if st.button("결과로 돌아가기", icon=":material/arrow_back:", type="primary", use_container_width=True):
+
+        if st.button(
+            "결과로 돌아가기",
+            icon=":material/arrow_back:",
+            type="primary",
+            use_container_width=True,
+        ):
             go("result")
             st.rerun()
 
