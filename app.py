@@ -884,7 +884,6 @@ if st.session_state.step == "landing":
             "안내를 확인했고, 결과가 합격·능력 판정이 아님을 이해합니다.",
             key="consent",
             width="content",
-            wrap=False,
         )
 
     st.button(
