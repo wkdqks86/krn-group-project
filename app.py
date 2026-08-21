@@ -579,13 +579,20 @@ elif st.session_state.step == "detail":
             snapshot = occupation["snapshot_json"]
             with st.container(border=True):
                 st.write(f"**{occupation['name']}**")
+                if snapshot.get("official_name"):
+                    st.caption(f"공식 직업명: {snapshot['official_name']}")
                 st.write(snapshot["summary"])
                 st.caption(" · ".join(snapshot["typical_tasks"]))
                 if snapshot.get("fit_hint"):
                     st.write(snapshot["fit_hint"])
                 st.caption(snapshot["education_hint"])
+
+                st.caption(snapshot.get("source", ""))
+                st.link_button("직업정보 보러가기", occupation["source_url"], icon=":material/open_in_new:")
+
                 st.link_button("임금직업포털에서 찾아보기", occupation["source_url"], icon=":material/open_in_new:")
                 st.caption(f"검색창에 '{occupation['name']}'을(를) 입력해서 찾아보세요.")
+
         if st.button("결과로 돌아가기", icon=":material/arrow_back:"):
             go("result")
             st.rerun()
