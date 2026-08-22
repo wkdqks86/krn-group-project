@@ -1,5 +1,9 @@
 /* 탐색: 어두운 길에서 답을 켤수록 길이 밝아짐. 결과: 새벽이 열리며 실제로 발을 내딛음. */
 
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
 .stApp {
     background:
         radial-gradient(circle at 13% 16%, #fff 0 1px, transparent 1.6px),
@@ -10,6 +14,14 @@
         radial-gradient(circle at 68% 34%, #354d73 0, #1a2a47 28%, #0b1324 68%) !important;
     background-attachment: fixed !important;
     color: #eff5ff;
+    overflow-x: hidden;
+    max-width: 100%;
+}
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="stMainBlockContainer"] {
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .stApp:has(.flow-dawn) {
@@ -24,17 +36,24 @@ header[data-testid="stHeader"] {
 }
 
 .stApp [data-testid="stMainBlockContainer"] {
-    max-width: min(1080px, 92vw);
+    max-width: min(1080px, 100%);
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
     padding-top: 1.8rem;
     padding-bottom: 3.5rem;
+    box-sizing: border-box;
 }
 .stApp:has(.question-block) [data-testid="stMainBlockContainer"] {
     padding-top: 0.9rem;
     padding-bottom: 1.1rem;
 }
 
+[data-testid="stHorizontalBlock"],
+[data-testid="column"],
+[data-testid="stVerticalBlock"] {
+    min-width: 0;
+}
 [data-testid="stMainBlockContainer"] > div > [data-testid="stVerticalBlock"] {
     gap: 0.85rem;
 }
@@ -74,9 +93,13 @@ header[data-testid="stHeader"] {
 }
 
 section[data-testid="stSidebar"] {
-    min-width: 220px !important;
     background: #07101fcc !important;
     border-right: 1px solid #43526b !important;
+}
+@media (min-width: 881px) {
+    section[data-testid="stSidebar"] {
+        min-width: 220px !important;
+    }
 }
 
 section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
@@ -170,20 +193,27 @@ section[data-testid="stSidebar"] .stButton {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
+    gap: 8px 12px;
     color: #bdcce1;
     font-size: 0.84rem;
     margin: 0 0 1.5rem 0;
     word-break: keep-all;
     min-height: 1.4rem;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 .stApp:has(.question-block) .stage-bar {
     margin-bottom: 0.55rem;
 }
 .stage-bar span:first-child,
 .stage-bar b {
-    min-width: 7.2rem;
+    min-width: 0;
+    flex: 1 1 0;
     font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .stage-bar span:first-child {
     text-align: left;
@@ -195,6 +225,8 @@ section[data-testid="stSidebar"] .stButton {
 }
 .stage-progress {
     display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
     gap: 4px;
 }
 .stage-progress i {
@@ -283,7 +315,7 @@ div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
     margin: 0;
     text-align: left;
     box-shadow: none;
-    max-width: 38rem;
+    max-width: min(38rem, 100%);
 }
 .landing-chip {
     display: inline-block;
@@ -299,16 +331,19 @@ div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
     display: flex;
     flex-direction: column;
     gap: 0.28em;
-    font-size: clamp(1.7rem, 2.6vw, 2.35rem);
+    font-size: clamp(1.45rem, 5.2vw, 2.35rem);
     font-weight: 700;
     color: #f5f8ff;
     line-height: 1.35;
     letter-spacing: -0.04em;
     margin: 0 0 1.35rem 0;
     word-break: keep-all;
+    overflow-wrap: anywhere;
+    max-width: 100%;
 }
 .landing-title span {
     display: block;
+    max-width: 100%;
 }
 .landing-subtitle {
     font-size: 1.05rem;
@@ -316,6 +351,7 @@ div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
     line-height: 1.85;
     margin: 0 0 0.85rem 0;
     word-break: keep-all;
+    overflow-wrap: anywhere;
 }
 .landing-subtitle-sub {
     margin: 0;
@@ -443,6 +479,7 @@ div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
     line-height: 1.55;
     text-align: center;
     word-break: keep-all;
+    overflow-wrap: anywhere;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -764,6 +801,7 @@ div[data-testid="stHtml"]:has(.question-block) {
     line-height: 1.28;
     margin: 0 0 0.7rem 0;
     word-break: keep-all;
+    overflow-wrap: anywhere;
 }
 .detail-hero-sub {
     color: #dceae8;
@@ -828,8 +866,23 @@ div[data-testid="stHtml"]:has(style) {
 }
 
 @media (max-width: 880px) {
+    .stApp [data-testid="stMainBlockContainer"] {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
     .rank-strip { grid-template-columns: 1fr 1fr; }
-    .lantern { display: none; }
+    [data-testid="column"]:has(.lantern),
+    .lantern { display: none !important; }
     .orbit { height: 104px; }
     .landing-hero { max-width: none; }
+    .kicker { white-space: normal; }
+    .stage-progress i { width: 16px; }
+    .detail-hero-title {
+        font-size: clamp(1.7rem, 8vw, 2.35rem);
+    }
+    .question-block {
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+    }
 }
