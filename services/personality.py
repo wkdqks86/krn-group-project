@@ -56,7 +56,7 @@ def top_axes(user_vector: dict[str, float], n: int = 3, axes: list[str] | None =
     return ranked[:n]
 
 
-def bottom_axes(user_vector: dict[str, float], n: int = 2, axes: list[str] | None = None) -> list[str]:
+def bottom_axes(user_vector: dict[str, float], n: int = 3, axes: list[str] | None = None) -> list[str]:
     pool = axes or AXES
     ranked = sorted(pool, key=lambda a: user_vector.get(a, 0))
     return ranked[:n]
@@ -74,14 +74,16 @@ def riasec_type(user_vector: dict[str, float]) -> dict[str, str]:
     return {"code": a1 + a2, "name": name, "description": description, "combo_note": combo_note}
 
 
-def strength_lines(user_vector: dict[str, float], n: int = 6) -> list[str]:
+def strength_lines(user_vector: dict[str, float], n: int = 3) -> list[str]:
     texts = _CONTENT["axis_strength_text"]
     return [texts[a] for a in top_axes(user_vector, n=n) if a in texts]
 
 
-def growth_lines(user_vector: dict[str, float], n: int = 4) -> list[str]:
+def growth_lines(user_vector: dict[str, float], n: int = 3) -> list[str]:
     texts = _CONTENT["axis_growth_text"]
-    return [texts[a] for a in bottom_axes(user_vector, n=n) if a in texts]
+    skip = set(top_axes(user_vector, n=3))
+    ranked = [axis for axis in bottom_axes(user_vector, n=len(AXES)) if axis not in skip]
+    return [texts[axis] for axis in ranked[:n] if axis in texts]
 
 
 def radar_data(user_vector: dict[str, float]) -> dict[str, list]:
@@ -100,4 +102,20 @@ def personality_profile(user_vector: dict[str, float]) -> dict[str, Any]:
         "strengths_heading": _CONTENT["strengths_heading"],
         "growth_points_heading": _CONTENT["growth_points_heading"],
         "growth_points_note": _CONTENT["growth_points_note"],
+    }
+
+
+def heard_summary(user_vector: dict[str, float]) -> dict[str, Any]:
+    """결과 상단에 쓰는 '방금 답에서 읽은 것'. 점수를 다시 계산하지 않는다."""
+    high = top_axes(user_vector, n=2)
+    skip = set(high)
+    low = [axis for axis in bottom_axes(user_vector, n=len(AXES)) if axis not in skip][:2]
+    phrases = _CONTENT["riasec_phrase"]
+    high_bits = [phrases.get(axis, AXIS_LABELS[axis]) for axis in high]
+    low_bits = [AXIS_LABELS[axis] for axis in low]
+    return {
+        "headline": f"{' · '.join(high_bits)} 쪽에 답이 모였어요.",
+        "contrast": f"상대적으로 덜 드러난 쪽은 {' · '.join(low_bits)}예요." if low_bits else "",
+        "high_labels": [AXIS_LABELS[axis] for axis in high],
+        "low_labels": low_bits,
     }

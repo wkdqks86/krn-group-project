@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from domain.scoring import rank_job_families
-from services.explainer import explain_recommendation, template_cautions
+from services.explainer import explain_recommendation, prior_test_notes, template_cautions
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -71,3 +71,17 @@ def test_explain_recommendation_passes_context_through():
 
     assert explained["reasons"]
     assert any("개인 작업" in line for line in explained["cautions"])
+
+
+def test_prior_test_notes_are_reading_lens_not_empty():
+    lines = prior_test_notes({"mbti": "ISFP", "enneagram": "9"}, "교육·공공")
+    assert any("점수·순위" in line for line in lines)
+    assert any("혼자 충전" in line for line in lines)
+    assert any("사람 맥락" in line for line in lines)
+    assert any("조율·중재" in line for line in lines)
+    assert any("교육·공공" in line for line in lines)
+
+
+def test_prior_test_notes_skip_when_empty():
+    assert prior_test_notes({}, "IT·데이터") == []
+    assert prior_test_notes({"mbti": None, "enneagram": None}, "IT·데이터") == []

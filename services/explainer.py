@@ -107,6 +107,7 @@ _RESULT_COPY = _load_result_copy()
 _FAMILY_CONTEXT = _load_family_context()
 _PERSONALITY_CONTENT = _load_personality_content()
 _OCCUPATIONS_BY_FAMILY = _load_occupations_by_family()
+_PRIOR_TEST = _load_json(_COPY_PATH).get("prior_test", {})
 
 
 def _example_for(job_family_id: str, index: int) -> str:
@@ -262,6 +263,36 @@ def glossary_lines(recommendation: dict[str, Any]) -> list[str]:
         if not hint:
             continue
         lines.append(template.format(occupation=occ["name"], hint=hint))
+    return lines
+
+
+def prior_test_notes(
+    optional_traits: dict[str, Any] | None,
+    job_name: str,
+) -> list[str]:
+    """MBTI·에니어그램은 순위를 바꾸지 않고, 1위 직군을 읽는 렌즈로만 쓴다."""
+    traits = optional_traits or {}
+    mbti = str(traits.get("mbti") or "").strip().upper()
+    enneagram = str(traits.get("enneagram") or "").strip()
+    labels = []
+    if len(mbti) == 4 and mbti.isalpha():
+        labels.append(mbti)
+    if enneagram in (_PRIOR_TEST.get("enneagram") or {}):
+        labels.append(f"에니어그램 {enneagram}")
+    if not labels:
+        return []
+
+    job = job_name or "이 직군"
+    lines = [_PRIOR_TEST.get("score_note", "입력하신 {traits}는 점수에 넣지 않았어요.").format(traits=" · ".join(labels))]
+    letters = _PRIOR_TEST.get("mbti_letters") or {}
+    if len(mbti) == 4:
+        for index in (0, 2):
+            template = letters.get(mbti[index])
+            if template:
+                lines.append(template.format(job_name=job))
+    enneagram_map = _PRIOR_TEST.get("enneagram") or {}
+    if enneagram in enneagram_map:
+        lines.append(enneagram_map[enneagram].format(job_name=job))
     return lines
 
 

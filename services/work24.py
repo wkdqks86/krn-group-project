@@ -1,20 +1,26 @@
-"""고용24/워크넷 API 어댑터. 실패하면 스냅샷으로 넘어간다."""
+"""고용24/워크넷 API 어댑터. 실패하면 스냅샷으로 넘어간다.
+
+키가 없으면 호출하지 않고, timeout·캐시를 쓰며,
+어떤 예외가 나도 화면은 스냅샷으로 계속 그린다. 인증키는 로그에 남기지 않는다.
+"""
 
 from __future__ import annotations
 
+import hashlib
 import json
+import time
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
 from xml.etree import ElementTree as ET
 
-import requests
-
 DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "occupations.json"
-# P5가 공공데이터포털 이용신청 후 실제 엔드포인트를 채운다. 비어 있으면 스냅샷만 사용.
 JOB_INFO_ENDPOINT = ""
-TIMEOUT_SECONDS = 5
+TIMEOUT_SECONDS = 3.0
+CACHE_TTL_SEC = 60
+
+_cache: dict[str, tuple[float, Any]] = {}
 
 
 @lru_cache(maxsize=1)
@@ -36,6 +42,11 @@ def _api_key() -> str:
         return ""
 
 
+def _cache_key(params: dict[str, str]) -> str:
+    raw = "&".join(f"{key}={value}" for key, value in sorted(params.items()))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
+
+
 def fetch_job_info(keyword: str, auth_key: str | None = None) -> dict[str, Any] | None:
     """실시간 조회를 시도한다. 키가 없거나 실패하면 None."""
     key = (auth_key if auth_key is not None else _api_key()).strip()
@@ -45,15 +56,26 @@ def fetch_job_info(keyword: str, auth_key: str | None = None) -> dict[str, Any] 
         "authKey": key,
         "returnType": "XML",
         "target": "jobDtl",
-        "keyword": keyword,
+        "keyword": " ".join(str(keyword).split()),
     }
-    url = f"{JOB_INFO_ENDPOINT}?{urlencode(params)}"
+    cache_key = _cache_key({name: value for name, value in params.items() if name != "authKey"})
+    hit = _cache.get(cache_key)
+    if hit and time.monotonic() <= hit[0]:
+        return hit[1]
+    if hit:
+        _cache.pop(cache_key, None)
+
     try:
+        import requests
+
+        url = f"{JOB_INFO_ENDPOINT}?{urlencode(params)}"
         response = requests.get(url, timeout=TIMEOUT_SECONDS)
         response.raise_for_status()
         root = ET.fromstring(response.content)
-        return {"status": "ok", "raw_tag": root.tag, "keyword": keyword}
-    except (requests.RequestException, ET.ParseError):
+        payload = {"status": "ok", "raw_tag": root.tag, "keyword": keyword}
+        _cache[cache_key] = (time.monotonic() + CACHE_TTL_SEC, payload)
+        return payload
+    except Exception:
         return None
 
 

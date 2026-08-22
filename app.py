@@ -5,18 +5,16 @@ from pathlib import Path
 import plotly.graph_objects as pgo
 import streamlit as st
 
+import engine
 from domain.branching import (
     CLUSTER_ORDER,
-    build_user_profile,
     common_sjt_questions,
     followup_questions_for_clusters,
     likert_questions,
     visible_question_queue,
 )
-from domain.scoring import ENGINE_VERSION, rank_job_families
 from services.explainer import explain_recommendation
 from services.personality import personality_profile
-from services.work24 import job_family_detail
 
 ROOT = Path(__file__).resolve().parent
 DISCLAIMER = (
@@ -53,6 +51,9 @@ def init_state():
     st.session_state.setdefault("recommendations", [])
     st.session_state.setdefault("selected_job_id", None)
     st.session_state.setdefault("feedback", {})
+    st.session_state.setdefault("session_id", None)
+    st.session_state.setdefault("heard", None)
+    st.session_state.setdefault("prior_test", [])
 
 
 def build_module_shuffles(questions_payload: dict, seed: int) -> dict[str, list[str]]:
@@ -102,6 +103,94 @@ def reset_session():
 
 def go(step: str):
     st.session_state.step = step
+    st.session_state.scroll_to_top = True
+
+
+def _start_from_landing() -> None:
+    st.session_state.session_id = engine.start_session()
+    go("optional")
+
+
+def _save_optional_and_continue() -> None:
+    mbti = str(st.session_state.get("optional_mbti_select") or "모름 / 건너뛰기")
+    enneagram = str(st.session_state.get("optional_enneagram_select") or "모름 / 건너뛰기")
+    st.session_state.optional_traits = {
+        "mbti": None if mbti.startswith("모름") else mbti,
+        "enneagram": None if enneagram.startswith("모름") else enneagram,
+    }
+    session_id = st.session_state.get("session_id")
+    if session_id:
+        engine.save_prior_test(
+            session_id,
+            mbti=st.session_state.optional_traits["mbti"],
+            enneagram=st.session_state.optional_traits["enneagram"],
+        )
+    go("diagnose")
+
+
+def _compute_and_show_result() -> None:
+    education = st.session_state.get("context_education_select")
+    career = st.session_state.get("context_career_select")
+    region = st.session_state.get("context_region_select") or []
+    work_style = st.session_state.get("context_work_style_select")
+    st.session_state.context = {
+        "education": None if education in {None, "미입력"} else education,
+        "career": None if career in {None, "미입력"} else career,
+        "region": region,
+        "work_style": None if work_style in {None, "미입력"} else work_style,
+    }
+    if not st.session_state.session_id:
+        st.session_state.session_id = engine.start_session()
+    result = engine.compute(
+        st.session_state.session_id,
+        responses=st.session_state.responses,
+        context=st.session_state.context,
+        optional_traits=st.session_state.optional_traits,
+    )
+    st.session_state.user_vector = result["user_vector"]
+    st.session_state.recommendations = result["top"]
+    st.session_state.heard = result["heard"]
+    st.session_state.prior_test = result.get("prior_test") or []
+    go("result")
+
+
+def apply_scroll_to_top():
+    """버튼 클릭 후 Streamlit이 스크롤 위치를 유지해서, 새 화면이 맨 아래부터 보이는 것을 막는다."""
+    should_scroll = bool(st.session_state.pop("scroll_to_top", False))
+    script = """
+        <script>
+        (function () {
+          const go = () => {
+            const target = document.getElementById("krn-page-top");
+            if (target) {
+              target.scrollIntoView({ block: "start", behavior: "auto" });
+            }
+            const nodes = document.querySelectorAll(
+              '[data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stMainBlockContainer"], section.main, .stApp'
+            );
+            nodes.forEach((el) => {
+              el.scrollTop = 0;
+              if (el.scrollTo) el.scrollTo(0, 0);
+            });
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+          };
+          go();
+          requestAnimationFrame(go);
+          const started = Date.now();
+          const timer = setInterval(() => {
+            go();
+            if (Date.now() - started > 1200) clearInterval(timer);
+          }, 50);
+        })();
+        </script>
+        """ if should_scroll else ""
+    # 스크롤 스크립트 유무와 관계없이 같은 슬롯을 써서, 문항 전환 때 레이아웃이 밀리지 않게 한다.
+    st.html(
+        f'<div id="krn-scroll-script"></div>{script}',
+        unsafe_allow_javascript=should_scroll,
+    )
 
 
 def diagnosis_question_total(questions_payload: dict) -> int:
@@ -109,6 +198,66 @@ def diagnosis_question_total(questions_payload: dict) -> int:
     base = len(likert_questions(questions_payload)) + len(common_sjt_questions(questions_payload))
     followup = len(followup_questions_for_clusters(questions_payload, CLUSTER_ORDER[:2]))
     return base + followup
+
+
+ROUTE = [
+    ("landing", "시작하기"),
+    ("optional", "자기이해"),
+    ("diagnose", "핵심 진단"),
+    ("context", "현실 조건"),
+    ("result", "결과 보기"),
+]
+ROUTE_INDEX = {
+    "landing": 0,
+    "optional": 1,
+    "diagnose": 2,
+    "context": 3,
+    "result": 4,
+    "detail": 4,
+    "feedback": 4,
+}
+
+
+def route_index(step: str) -> int:
+    return ROUTE_INDEX.get(step, 0)
+
+
+def render_route_rail(step: str) -> None:
+    idx = route_index(step)
+    items = []
+    for i, (_, label) in enumerate(ROUTE):
+        cls = "done" if i < idx else ("now" if i == idx else "")
+        items.append(f'<div class="{cls}">{escape_html(label)}</div>')
+    st.markdown(
+        f"""
+        <div class="rail-brand"><span>✦</span> 잠재력 발견</div>
+        <p class="rail-sub">한 걸음씩 밝히며<br/>다음 직군을 찾아갑니다</p>
+        <div class="route">{"".join(items)}</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_stage_bar(step: str, count_label: str) -> None:
+    idx = route_index(step)
+    bars = "".join('<i class="on"></i>' if i <= idx else "<i></i>" for i in range(5))
+    _, stage_name = ROUTE[idx]
+    st.markdown(
+        f"""
+        <div class="stage-bar">
+          <span>{idx + 1:02d} / {escape_html(stage_name)}</span>
+          <div class="stage-progress">{bars}</div>
+          <b>{escape_html(count_label)}</b>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _select_choice(state_key: str, value: object, question_id: str | None, auto_submit: bool) -> None:
+    st.session_state[state_key] = value
+    if auto_submit and question_id is not None:
+        st.session_state.responses[question_id] = value
 
 
 def render_choice_grid(
@@ -123,37 +272,89 @@ def render_choice_grid(
     cols = st.columns(columns)
     for idx, (value, label) in enumerate(options):
         with cols[idx % columns]:
-            if st.button(
+            st.button(
                 label,
                 key=f"{state_key}_option_{idx}",
-                use_container_width=True,
+                width="stretch",
                 type="primary" if selected == value else "secondary",
-            ):
-                st.session_state[state_key] = value
-                if auto_submit and question_id is not None:
-                    st.session_state.responses[question_id] = value
-                st.rerun()
+                on_click=_select_choice,
+                args=(state_key, value, question_id, auto_submit),
+            )
     return selected
+
+
+@st.fragment
+def diagnose_controls(current: dict, answer_key: str, answered_ids: list[str]) -> None:
+    """선택지만 다시 그려서, 문항 전체를 깜빡이지 않게 한다."""
+    with st.container(key="diagnose_choices", vertical_alignment="top", border=False):
+        if current["type"] == "likert":
+            likert_options = [
+                (1, "전혀\n아니다"),
+                (2, "아니다"),
+                (3, "보통"),
+                (4, "그렇다"),
+                (5, "매우\n그렇다"),
+            ]
+            render_choice_grid(
+                likert_options,
+                state_key=answer_key,
+                columns=5,
+                question_id=current["question_id"],
+            )
+        else:
+            sjt_options = [(option["option_id"], option["label"]) for option in current["options"]]
+            render_choice_grid(
+                sjt_options,
+                state_key=answer_key,
+                columns=2,
+                question_id=current["question_id"],
+            )
+    picked = st.session_state.get(answer_key)
+
+    with st.container(key="diagnose_nav"):
+        nav_prev, nav_next = st.columns(2, gap="medium")
+        with nav_prev:
+            if st.button("이전", icon=":material/arrow_back:", width="stretch"):
+                if answered_ids:
+                    last_id = answered_ids[-1]
+                    del st.session_state.responses[last_id]
+                    st.session_state.pop(f"choice_{last_id}", None)
+                else:
+                    go("optional")
+                st.session_state.scroll_to_top = True
+                st.rerun(scope="app")
+        with nav_next:
+            if st.button(
+                "다음",
+                type="primary",
+                icon=":material/arrow_forward:",
+                width="stretch",
+                disabled=picked is None,
+            ):
+                st.session_state.responses[current["question_id"]] = picked
+                if st.session_state.session_id:
+                    engine.answer(st.session_state.session_id, current["question_id"], picked)
+                st.session_state.scroll_to_top = True
+                st.rerun(scope="app")
 
 
 def escape_html(text: str) -> str:
     return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def render_result_section(kind: str, title: str, lines: list[str], icon: str):
+def render_result_section(kind: str, title: str, lines: list[str], icon: str, *, expanded: bool = False):
     if not lines:
         return
     items_html = "".join(f"<li>{escape_html(line)}</li>" for line in lines)
-    safe_title = escape_html(title)
-    st.markdown(
-        f"""
-        <div class="result-section-box {kind}">
-          <p class="result-section-title">{icon} {safe_title}</p>
-          <ul class="result-section-list">{items_html}</ul>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    with st.expander(f"{icon} {title}", expanded=expanded):
+        st.markdown(
+            f"""
+            <div class="result-section-box {kind}">
+              <ul class="result-section-list">{items_html}</ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 def render_personality_type_box(description: str, combo_note: str):
@@ -174,730 +375,132 @@ def render_personality_insight_box(
     lines: list[str],
     icon: str,
     note: str = "",
+    *,
+    expanded: bool = False,
 ):
     items_html = "".join(f"<li>{escape_html(line)}</li>" for line in lines)
     note_html = f'<p class="personality-insight-note">{escape_html(note)}</p>' if note else ""
-    st.markdown(
-        f"""
-        <div class="personality-insight-box {kind}">
-          <p class="personality-insight-title">{icon} {escape_html(title)}</p>
-          {note_html}
-          <ul class="personality-insight-list">{items_html}</ul>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    with st.expander(f"{icon} {title}", expanded=expanded):
+        st.markdown(
+            f"""
+            <div class="personality-insight-box {kind}">
+              {note_html}
+              <ul class="personality-insight-list">{items_html}</ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
-st.set_page_config(page_title="잠재력 발견", page_icon=":material/explore:", layout="centered")
+st.set_page_config(
+    page_title="잠재력 발견",
+    page_icon=":material/explore:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 init_state()
+
+
+@st.cache_resource
+def _boot_engine():
+    return engine.bootstrap()
+
+
+_boot_engine()
 questions_payload = load_json("questions.json")
 profiles_payload = load_json("job_profiles.json")
 likert_labels = questions_payload["likert_labels"]
 copy = load_json("copy.json")
 SCREEN = copy["screens"]
 current_step = st.session_state.step
-compact_steps = {"diagnose", "detail"}
+DAWN_STEPS = {"result", "detail", "feedback"}
 
+st.html(f"<style>{(ROOT / 'static' / 'flow.css').read_text(encoding='utf-8')}</style>")
 st.markdown(
-    """
-    <style>
-    .landing-hero {
-        background: linear-gradient(180deg, #f3f9ff 0%, #ffffff 100%);
-        border: 1px solid #d7e9ff;
-        border-radius: 16px;
-        padding: 24px 22px;
-        margin-bottom: 14px;
-        text-align: center;
-        box-shadow: 0 8px 24px rgba(15, 36, 64, 0.05);
-    }
-    .landing-chip {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 600;
-        color: #0b5cab;
-        background: #e9f3ff;
-        border: 1px solid #cfe5ff;
-        border-radius: 999px;
-        padding: 4px 10px;
-        margin-bottom: 10px;
-    }
-    .page-title {
-        font-size: 4rem !important;
-        font-weight: 800;
-        color: #0f2440;
-        text-align: center;
-        margin: 8px 0 4px 0;
-        line-height: 1.2;
-    }
-    .page-subtitle {
-        font-size: 16px;
-        font-weight: 500;
-        color: #5a6f89;
-        text-align: center;
-        margin: 0 0 14px 0;
-    }
-    .landing-title {
-        font-size: 30px;
-        font-weight: 800;
-        color: #0f2440;
-        line-height: 1.25;
-        margin-bottom: 8px;
-    }
-    .landing-subtitle {
-        font-size: 15px;
-        color: #38506e;
-        line-height: 1.6;
-        margin-bottom: 0;
-    }
-    .landing-section-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: #17365d;
-        margin: 12px 0 6px 0;
-    }
-    .landing-section-chip {
-        display: inline-block;
-        font-size: 14px;
-        font-weight: 700;
-        color: #0b5cab;
-        background: #e9f3ff;
-        border: 1px solid #cfe5ff;
-        border-radius: 999px;
-        padding: 5px 12px;
-        margin: 12px 0 8px 0;
-        line-height: 1.2;
-    }
-    .landing-note {
-        font-size: 13px;
-        color: #5a6f89;
-        margin: 0 0 12px 0;
-        text-align: center;
-        line-height: 1.5;
-    }
-    .landing-kpi-box {
-        background: #ffffff;
-        border: 1px solid #d7e9ff;
-        border-radius: 14px;
-        padding: 16px 14px;
-        margin-bottom: 10px;
-        text-align: center;
-        box-shadow: 0 4px 14px rgba(15, 36, 64, 0.04);
-    }
-    .landing-kpi-label {
-        font-size: 16px;
-        font-weight: 600;
-        color: #17365d;
-        margin: 0 0 6px 0;
-        line-height: 1.3;
-    }
-    .landing-kpi-value {
-        font-size: 30px;
-        font-weight: 800;
-        color: #0f2440;
-        margin: 0 0 8px 0;
-        line-height: 1.15;
-    }
-    .landing-kpi-desc {
-        font-size: 14px;
-        color: #4a6280;
-        margin: 0;
-        line-height: 1.5;
-    }
-    .landing-steps-line {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1b7f4b;
-        line-height: 1.6;
-        margin: 0;
-        text-align: center;
-    }
-    .landing-steps-box {
-        background: #f7fbff;
-        border: 1px solid #d7e9ff;
-        border-radius: 12px;
-        padding: 10px 12px;
-        margin-bottom: 6px;
-    }
-    .landing-disclaimer-box {
-        background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%);
-        border: 1px solid #d7e9ff;
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin-bottom: 10px;
-    }
-    .landing-disclaimer-text {
-        margin: 0;
-        color: #2b3f57;
-        font-size: 0.95rem;
-        line-height: 1.65;
-        font-weight: 500;
-    }
-    .landing-consent-heading {
-        margin: 0 0 12px 0;
-        font-size: 0.92rem;
-        font-weight: 700;
-        color: #5a6f89;
-        text-align: center;
-        line-height: 1.5;
-    }
-    div[data-testid="stCheckbox"] > label {
-        background: #ffffff;
-        border: 1px solid #d7e9ff;
-        border-radius: 12px;
-        padding: 14px 20px;
-        width: max-content !important;
-        max-width: none !important;
-        box-shadow: 0 2px 8px rgba(15, 36, 64, 0.03);
-        transition: border-color 0.15s ease, background 0.15s ease;
-        display: inline-flex !important;
-        align-items: center;
-        gap: 10px;
-        box-sizing: border-box;
-        white-space: nowrap !important;
-    }
-    div[data-testid="stCheckbox"] {
-        width: max-content !important;
-        max-width: none !important;
-        padding: 0;
-        margin: 0 0 12px 0;
-    }
-    div[data-testid="stCheckbox"] > label:hover {
-        border-color: #9ec8f5;
-        background: #f7fbff;
-    }
-    div[data-testid="stCheckbox"] p,
-    div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"],
-    div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
-        font-size: 0.98rem !important;
-        font-weight: 600 !important;
-        color: #17365d !important;
-        line-height: 1.55 !important;
-        margin: 0 !important;
-        white-space: nowrap !important;
-    }
-    .diagnose-module-chip {
-        display: inline-block;
-        font-size: 14px;
-        font-weight: 700;
-        color: #0b5cab;
-        background: #e9f3ff;
-        border: 1px solid #cfe5ff;
-        border-radius: 999px;
-        padding: 6px 14px;
-        margin: 4px 0 10px 0;
-        line-height: 1.2;
-    }
-    .page-section-chip {
-        display: inline-block;
-        font-size: 20px;
-        font-weight: 800;
-        color: #0b5cab;
-        background: #e9f3ff;
-        border: 1px solid #cfe5ff;
-        border-radius: 999px;
-        padding: 8px 16px;
-        margin: 0 0 12px 0;
-        line-height: 1.2;
-    }
-    .diagnose-shell {
-        min-height: calc(100vh - 1.5rem);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        gap: 0.35rem;
-        padding-bottom: 0.25rem;
-    }
-    .diagnose-top {
-        flex: 0 0 auto;
-    }
-    .diagnose-progress-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 4px;
-    }
-    .diagnose-progress-meta {
-        font-size: 13px;
-        font-weight: 700;
-        color: #17365d;
-        white-space: nowrap;
-    }
-    .diagnose-prompt-box {
-        background: #ffffff;
-        border: 1px solid #d7e9ff;
-        border-radius: 14px;
-        padding: 14px 16px;
-        margin: 6px 0 8px 0;
-        min-height: 72px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #0f2440;
-        line-height: 1.45;
-    }
-    .diagnose-hint {
-        font-size: 12px;
-        color: #5a6f89;
-        margin: 0;
-        text-align: center;
-    }
-    .diagnose-choices-wrap {
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 0.35rem;
-        padding: 0.15rem 0;
-    }
-    .diagnose-choices-wrap div[data-testid="column"] button {
-        min-height: 2.75rem;
-        padding: 0.35rem 0.4rem;
-        font-size: 0.82rem;
-        line-height: 1.25;
-        white-space: normal;
-    }
-    .diagnose-nav {
-        flex: 0 0 auto;
-        margin-top: 0.15rem;
-    }
-    .diagnose-compact-title {
-        font-size: 1.35rem;
-        font-weight: 800;
-        color: #0f2440;
-        margin: 0 0 2px 0;
-        text-align: center;
-    }
-    .result-hero {
-        background: linear-gradient(135deg, #eef6ff 0%, #ffffff 55%);
-        border: 1px solid #cfe5ff;
-        border-radius: 18px;
-        padding: 18px 20px;
-        margin-bottom: 14px;
-        text-align: center;
-    }
-    .result-hero-title {
-        font-size: 1.75rem;
-        font-weight: 800;
-        color: #0f2440;
-        margin: 0 0 6px 0;
-    }
-    .result-hero-sub {
-        font-size: 0.95rem;
-        color: #4a6280;
-        margin: 0;
-    }
-    .result-card {
-        border-radius: 16px;
-        padding: 16px 18px;
-        margin-bottom: 14px;
-        border: 1px solid #d7e9ff;
-        box-shadow: 0 6px 18px rgba(15, 36, 64, 0.05);
-    }
-    .result-card-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-    .result-rank-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 1.35rem;
-        font-weight: 800;
-        color: #0f2440;
-    }
-    .result-score-pill {
-        display: inline-block;
-        font-size: 0.95rem;
-        font-weight: 800;
-        padding: 6px 12px;
-        border-radius: 999px;
-        background: #e9f3ff;
-        color: #0b5cab;
-        border: 1px solid #cfe5ff;
-    }
-    .result-band-chip {
-        display: inline-block;
-        font-size: 0.82rem;
-        font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 999px;
-        margin-bottom: 10px;
-    }
-    .result-section-box {
-        background: #ffffff;
-        border: 1px solid #d7e9ff;
-        border-radius: 14px;
-        padding: 14px 16px;
-        margin: 0 0 12px 0;
-        box-shadow: 0 3px 12px rgba(15, 36, 64, 0.04);
-    }
-    .result-section-box.reasons {
-        border-left: 0;
-        background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%);
-    }
-    .result-section-box.cautions {
-        border-left: 0;
-        background: linear-gradient(180deg, #fffaf2 0%, #ffffff 100%);
-    }
-    .result-section-box.actions {
-        border-left: 0;
-        background: linear-gradient(180deg, #f4fbf7 0%, #ffffff 100%);
-    }
-    .result-section-box.growth {
-        border-left: 0;
-        background: linear-gradient(180deg, #f8f6ff 0%, #ffffff 100%);
-    }
-    .result-section-box.glossary {
-        border-left: 0;
-        background: linear-gradient(180deg, #f7f9fb 0%, #ffffff 100%);
-    }
-    .result-section-title {
-        font-size: 1.02rem;
-        font-weight: 800;
-        color: #17365d;
-        margin: 0 0 8px 0;
-        line-height: 1.35;
-    }
-    .result-section-list {
-        margin: 0;
-        padding-left: 1.15rem;
-        color: #2b3f57;
-        line-height: 1.55;
-        font-size: 0.95rem;
-    }
-    .result-section-list li {
-        margin-bottom: 6px;
-    }
-    .personality-panel {
-        background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
-        border: 1px solid #d7e9ff;
-        border-radius: 18px;
-        padding: 18px 18px 10px 18px;
-        margin-bottom: 18px;
-        box-shadow: 0 8px 24px rgba(15, 36, 64, 0.06);
-    }
-    .personality-panel-title {
-        font-size: 1.35rem;
-        font-weight: 800;
-        color: #0f2440;
-        margin: 0 0 12px 0;
-        line-height: 1.35;
-    }
-    .personality-type-box {
-        background: #ffffff;
-        border: 1px solid #cfe5ff;
-        border-radius: 14px;
-        padding: 16px 18px;
-        margin-bottom: 14px;
-        box-shadow: 0 3px 12px rgba(11, 92, 171, 0.06);
-    }
-    .personality-type-desc {
-        margin: 0 0 10px 0;
-        color: #2b3f57;
-        font-size: 1rem;
-        line-height: 1.65;
-        font-weight: 500;
-    }
-    .personality-type-note {
-        margin: 0;
-        color: #5a6f89;
-        font-size: 0.92rem;
-        line-height: 1.55;
-        padding-top: 10px;
-        border-top: 1px dashed #d7e9ff;
-    }
-    .personality-radar-box {
-        background: #ffffff;
-        border: 1px solid #e8f1fb;
-        border-radius: 14px;
-        padding: 8px 8px 0 8px;
-        margin-bottom: 14px;
-    }
-    .personality-insights-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-        margin-bottom: 4px;
-    }
-    @media (max-width: 768px) {
-        .personality-insights-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-    .personality-insight-box {
-        background: #ffffff;
-        border: 1px solid #d7e9ff;
-        border-radius: 14px;
-        padding: 14px 16px;
-        height: 100%;
-        box-shadow: 0 3px 12px rgba(15, 36, 64, 0.04);
-    }
-    .personality-insight-box.strengths {
-        background: linear-gradient(180deg, #f4fbf7 0%, #ffffff 100%);
-    }
-    .personality-insight-box.unfamiliar {
-        background: linear-gradient(180deg, #f8f6ff 0%, #ffffff 100%);
-    }
-    .personality-insight-title {
-        font-size: 1rem;
-        font-weight: 800;
-        color: #17365d;
-        margin: 0 0 8px 0;
-        line-height: 1.35;
-    }
-    .personality-insight-note {
-        margin: 0 0 8px 0;
-        color: #5a6f89;
-        font-size: 0.88rem;
-        line-height: 1.5;
-    }
-    .personality-insight-list {
-        margin: 0;
-        padding-left: 1.1rem;
-        color: #2b3f57;
-        line-height: 1.6;
-        font-size: 0.94rem;
-    }
-    .personality-insight-list li {
-        margin-bottom: 8px;
-    }
-    .personality-card-title {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: #0f2440;
-    }
-    .optional-note-box {
-        background: #ffffff;
-        border: 1px solid #d7e9ff;
-        border-radius: 14px;
-        padding: 14px 16px;
-        margin: 0 0 12px 0;
-        box-shadow: 0 3px 12px rgba(15, 36, 64, 0.04);
-    }
-    .optional-note-text {
-        margin: 0;
-        color: #2b3f57;
-        font-size: 1rem;
-        font-weight: 500;
-        line-height: 1.6;
-    }
-    .optional-field-box {
-        background: #ffffff;
-        border: 1px solid #d7e9ff;
-        border-radius: 14px;
-        padding: 14px 16px 10px 16px;
-        margin: 0 0 12px 0;
-        box-shadow: 0 3px 12px rgba(15, 36, 64, 0.04);
-    }
-    .optional-field-label {
-        margin: 0 0 8px 0;
-        color: #2b3f57;
-        font-size: 1rem;
-        font-weight: 500;
-        line-height: 1.6;
-    }
-    
-    /* Detail 화면(연관 직업) 카드 스타일 */
-    .detail-hero {
-        background: linear-gradient(135deg, #eef6ff 0%, #ffffff 55%);
-        border: 1px solid #cfe5ff;
-        border-radius: 18px;
-        padding: 22px 22px;
-        margin-bottom: 16px;
-        text-align: center;
-    }
-    .detail-hero-title {
-        font-size: 2.55rem !important;
-        font-weight: 900;
-        color: #0f2440;
-        margin: 0 0 10px 0;
-        line-height: 1.2;
-        letter-spacing: -0.03em;
-    }
-    .detail-hero-sub {
-        font-size: 1rem;
-        color: #4a6280;
-        margin: 0;
-        line-height: 1.65;
-        font-weight: 500;
-    }
-    .detail-section-title-box {
-        background: #ffffff;
-        border: 1px solid #cfe5ff;
-        border-radius: 14px;
-        padding: 14px 16px;
-        margin: 0 0 14px 0;
-        box-shadow: 0 4px 14px rgba(15, 36, 64, 0.05);
-        text-align: center;
-    }
-    .detail-section-title {
-        margin: 0;
-        font-size: 1.7rem !important;
-        font-weight: 900;
-        color: #17365d;
-        line-height: 1.3;
-    }
-    .detail-occupation-card {
-        border-radius: 16px;
-        border: 1px solid #d7e9ff;
-        background: #ffffff;
-        box-shadow: 0 6px 18px rgba(15, 36, 64, 0.04);
-        padding: 16px 16px;
-        margin-bottom: 12px;
-    }
-    .detail-occupation-name {
-        font-size: 1.18rem !important;
-        font-weight: 800;
-        color: #0f2440;
-        margin: 0 0 8px 0;
-        line-height: 1.35;
-    }
-    .detail-occupation-summary {
-        margin: 0 0 8px 0;
-        color: #2b3f57;
-        line-height: 1.6;
-        font-size: 0.98rem;
-        font-weight: 500;
-    }
-    .detail-occupation-hint {
-        margin: 0 0 8px 0;
-        color: #5a6f89;
-        font-size: 0.92rem;
-        line-height: 1.55;
-    }
-
-    /* "연관 직업 보기" 버튼만 진하게 보이도록 */
-    button[aria-label="연관 직업 보기"] {
-        background: linear-gradient(180deg, #0b5cab 0%, #084c8a 100%) !important;
-        color: #ffffff !important;
-        border: 0 !important;
-        border-radius: 12px !important;
-        font-weight: 900 !important;
-        padding: 0.65rem 1rem !important;
-        box-shadow: 0 10px 22px rgba(11, 92, 171, 0.18) !important;
-    }
-
-    section[data-testid="stSidebar"] {
-        min-width: 220px;
-    }
-    </style>
-    """,
+    f'<div id="krn-skin" class="{"flow-dawn" if current_step in DAWN_STEPS else "flow-night"}"></div>',
     unsafe_allow_html=True,
 )
 
-if current_step not in compact_steps:
-    st.markdown('<p class="page-title">잠재력 발견</p>', unsafe_allow_html=True)
-    st.markdown(
-        f'<p class="page-subtitle">20~30대 취업준비생을 위한 직군 탐색 MVP · engine {ENGINE_VERSION}</p>',
-        unsafe_allow_html=True,
-    )
+st.markdown('<div id="krn-page-top"></div>', unsafe_allow_html=True)
+apply_scroll_to_top()
 
 with st.sidebar:
-    st.subheader("진행")
-    st.write(f"현재 단계: {st.session_state.step}")
+    render_route_rail(current_step)
+    st.markdown('<div class="rail-reset-spacer"></div>', unsafe_allow_html=True)
     if st.button("처음부터 다시", icon=":material/refresh:"):
         reset_session()
         st.rerun()
 
 if st.session_state.step == "landing":
-    st.markdown(
-        """
-        <div class="landing-hero">
-          <div class="landing-chip">취업 탐색 가이드</div>
-          <div class="landing-title">지금의 나에게 맞는 직군을<br/>명확하게 좁혀보세요</div>
-          <p class="landing-subtitle">
-            약 10분 동안 흥미·업무 방식·상황 판단에 답하면,<br/>
-            8개 대분류 직군 중 상대적으로 가까운 TOP 5를 보여드립니다.
-          </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown('<div class="landing-section-chip">한눈에 보는 진단 정보</div>', unsafe_allow_html=True)
-    info_col1, info_col2, info_col3 = st.columns(3)
-    info_col1.markdown(
-        (
-            '<div class="landing-kpi-box">'
-            '<p class="landing-kpi-label">소요 시간</p>'
-            '<p class="landing-kpi-value">약 10분</p>'
-            '<p class="landing-kpi-desc">복잡한 검사가 아닌 짧은 탐색형 진단입니다.</p>'
-            "</div>"
-        ),
-        unsafe_allow_html=True,
-    )
-    info_col2.markdown(
-        (
-            '<div class="landing-kpi-box">'
-            '<p class="landing-kpi-label">분석 축</p>'
-            '<p class="landing-kpi-value">12개</p>'
-            '<p class="landing-kpi-desc">흥미 6축 + 핵심역량 6축으로 비교합니다.</p>'
-            "</div>"
-        ),
-        unsafe_allow_html=True,
-    )
-    info_col3.markdown(
-        (
-            '<div class="landing-kpi-box">'
-            '<p class="landing-kpi-label">결과</p>'
-            '<p class="landing-kpi-value">TOP 5 직군</p>'
-            '<p class="landing-kpi-desc">탐색 우선순위와 확인 포인트를 제공합니다.</p>'
-            "</div>"
-        ),
-        unsafe_allow_html=True,
-    )
-
-    st.markdown('<div class="landing-section-chip">진행 단계</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="landing-steps-box"><p class="landing-steps-line">안내 확인 → 자기이해 입력(선택) → 핵심 진단 → 현실 조건 → 결과 확인</p></div>',
-        unsafe_allow_html=True,
-    )
-
-    st.markdown('<div class="landing-section-chip">시작 전 확인</div>', unsafe_allow_html=True)
-
-    with st.container(border=True):
+    render_stage_bar("landing", "약 10분")
+    copy_col, light_col = st.columns([1.45, 0.75], gap="large", vertical_alignment="center")
+    with copy_col:
         st.markdown(
+            f"""
+            <div class="landing-hero">
+              <div class="landing-chip">취업 탐색 가이드</div>
+              <div class="landing-title">
+                <span>지금의 나에게 맞는 직군을</span>
+                <span>명확하게 좁혀보세요</span>
+              </div>
+              <p class="landing-subtitle">{escape_html(SCREEN["landing_first_line"])}</p>
+              <p class="landing-subtitle landing-subtitle-sub">
+                약 10분 동안 흥미·업무 방식·상황 판단에 답하면,
+                8개 대분류 직군 중 상대적으로 가까운 TOP 5를 보여드립니다.
+              </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with light_col:
+        st.markdown(
+            """
+            <div class="lantern">
+              <div>
+                <b>✦</b>
+                <span>한 문항씩 답을 고를수록, 앞이 조금 더 선명해집니다</span>
+              </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.space("large")
+    st.markdown(
         f"""
         <div class="landing-disclaimer-box">
         <p class="landing-disclaimer-text">{escape_html(DISCLAIMER)}</p>
         </div>
         <p class="landing-note">결과는 합격 가능성·능력 판정이 아닌, 탐색 우선순위 안내입니다.</p>
-        <p class="landing-consent-heading">아래 내용을 확인한 뒤 체크하고 진단을 시작해 주세요.</p>
         """,
         unsafe_allow_html=True,
     )
-
-    with st.container(
-        horizontal=True,
-        horizontal_alignment="center",
-        gap=None,
-    ):
+    st.space("medium")
+    st.markdown(
+        """
+        <p class="landing-consent-heading">아래 내용을 확인한 뒤 체크하고 탐색을 시작해 주세요.</p>
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.container(horizontal=True, horizontal_alignment="left", gap=None):
         st.checkbox(
             "안내를 확인했고, 결과가 합격·능력 판정이 아님을 이해합니다.",
             key="consent",
-            width="content",
+            width="stretch",
         )
 
+    st.space("medium")
     st.button(
-        "진단 시작",
+        SCREEN["start_button"],
         type="primary",
         icon=":material/play_arrow:",
         disabled=not st.session_state.consent,
-        on_click=go,
-        args=("optional",),
-        use_container_width=True,
+        width="stretch",
+        on_click=_start_from_landing,
     )
 
-
 elif st.session_state.step == "optional":
+    render_stage_bar("optional", "선택")
     st.markdown(
         '<div class="page-section-chip">기존 자기 이해 정보</div>',
         unsafe_allow_html=True,
@@ -907,13 +510,14 @@ elif st.session_state.step == "optional":
         """
         <div class="optional-note-box">
           <p class="optional-note-text">
-            선택 입력입니다. 모르면 건너뛰어도 되고, 직군 점수에는 반영되지 않습니다.
+            선택 입력입니다. 모르면 건너뛰어도 됩니다. 직군 점수·순위에는 넣지 않고, 결과에서 1위 직군을 읽을 때 참고 렌즈로만 씁니다.
           </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
+    st.space("medium")
     saved_traits = st.session_state.get("optional_traits") or {}
 
     mbti_options = [
@@ -963,26 +567,24 @@ elif st.session_state.step == "optional":
         )
 
     with st.container(border=True):
-        st.markdown('<p class="optional-field-label">애니어그램</p>', unsafe_allow_html=True)
+        st.markdown('<p class="optional-field-label">에니어그램</p>', unsafe_allow_html=True)
         enneagram = st.selectbox(
-            "애니어그램",
+            "에니어그램",
             enneagram_options,
             index=enneagram_options.index(str(enneagram_default)) if enneagram_default in enneagram_options else 0,
             label_visibility="collapsed",
             key="optional_enneagram_select",
         )
 
+    st.space("medium")
     with st.container(horizontal=True):
-        if st.button("이전", icon=":material/arrow_back:"):
-            go("landing")
-            st.rerun()
-        if st.button("다음", type="primary", icon=":material/arrow_forward:"):
-            st.session_state.optional_traits = {
-                "mbti": None if mbti.startswith("모름") else mbti,
-                "enneagram": None if enneagram.startswith("모름") else enneagram,
-            }
-            go("diagnose")
-            st.rerun()
+        st.button("이전", icon=":material/arrow_back:", on_click=go, args=("landing",))
+        st.button(
+            "다음",
+            type="primary",
+            icon=":material/arrow_forward:",
+            on_click=_save_optional_and_continue,
+        )
 
 elif st.session_state.step == "diagnose":
     queue = get_diagnosis_queue(questions_payload, st.session_state.responses)
@@ -1005,149 +607,23 @@ elif st.session_state.step == "diagnose":
     step_no = answered_count + 1
     module_label = module_labels.get(current.get("module", ""), "진단 문항")
     answer_key = f"choice_{current['question_id']}"
-    progress_ratio = min(1.0, answered_count / max(total_questions, 1))
+    halfway = answered_count >= total_questions / 2
+    orbit_note = SCREEN["mid_encourage"] if halfway else SCREEN["skip_hint"]
 
-    st.markdown(
+    render_stage_bar("diagnose", f"{step_no:02d} / {total_questions:02d}")
+    st.html(
+        f"""
+        <div class="question-block">
+          <p class="kicker">STEP {step_no:02d} · {escape_html(module_label)}</p>
+          <div class="diagnose-prompt-box">{escape_html(current["prompt"])}</div>
+          <div class="orbit" aria-hidden="true"><span>✦</span><small>{escape_html(orbit_note)}</small></div>
+        </div>
         """
-        <style>
-        .main .block-container { padding-top: 0.35rem; padding-bottom: 0.35rem; max-width: 880px; }
-        header[data-testid="stHeader"] { visibility: hidden; height: 0; }
-        div[data-testid="stProgress"] { margin-bottom: 0.15rem; }
-        .diagnose-progress-box {
-            background: #ffffff;
-            border: 1px solid #d7e9ff;
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin: 0 0 12px 0;
-            box-shadow: 0 3px 12px rgba(15, 36, 64, 0.04);
-        }
-        .diagnose-compact-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #17365d;
-            margin: 0 0 8px 0;
-            text-align: center;
-            line-height: 1.35;
-        }
-        .diagnose-progress-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        .diagnose-progress-meta {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #17365d;
-            white-space: nowrap;
-            line-height: 1.35;
-        }
-        .diagnose-prompt-box {
-            background: #ffffff;
-            border: 1px solid #d7e9ff;
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin: 6px 0 8px 0;
-            min-height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #0f2440;
-            line-height: 1.45;
-        }
-        .diagnose-hint {
-            font-size: 12px;
-            color: #5a6f89;
-            margin: 0 0 6px 0;
-            text-align: center;
-        }
-        div[data-testid="column"] button {
-            min-height: 2.75rem;
-            padding: 0.35rem 0.4rem;
-            font-size: 0.82rem;
-            line-height: 1.25;
-            white-space: pre-line;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
     )
-
-    with st.container(border=True):
-        st.markdown(
-            f"""
-            <p class="diagnose-compact-title">응답 진행률</p>
-            <div class="diagnose-progress-row">
-              <span class="diagnose-progress-meta">STEP {step_no:02d}/{total_questions:02d} · {module_label}</span>
-              <span class="diagnose-progress-meta">{answered_count}/{total_questions}</span>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.progress(progress_ratio)
-
-    st.markdown(
-        f'<div class="diagnose-prompt-box">{current["prompt"]}</div>',
-        unsafe_allow_html=True,
-    )
-
-    if current["type"] == "likert":
-        likert_display = {
-            5: "매우\n그렇다",
-            4: "그렇다",
-            3: "보통",
-            2: "아니다",
-            1: "전혀\n아니다",
-        }
-        likert_options = [
-            (5, likert_display[5]),
-            (4, likert_display[4]),
-            (3, likert_display[3]),
-            (2, likert_display[2]),
-            (1, likert_display[1]),
-        ]
-        choice = render_choice_grid(
-            likert_options,
-            state_key=answer_key,
-            columns=5,
-            question_id=current["question_id"],
-            auto_submit=False,
-        )
-    else:
-        sjt_options = [(option["option_id"], option["label"]) for option in current["options"]]
-        choice = render_choice_grid(
-            sjt_options,
-            state_key=answer_key,
-            columns=2,
-            question_id=current["question_id"],
-            auto_submit=False,
-        )
-
-    nav_prev, nav_next = st.columns(2)
-    with nav_prev:
-        if st.button("이전", icon=":material/arrow_back:", use_container_width=True):
-            if answered_ids:
-                last_id = answered_ids[-1]
-                del st.session_state.responses[last_id]
-                st.session_state.pop(f"choice_{last_id}", None)
-            else:
-                go("optional")
-            st.rerun()
-    with nav_next:
-        if st.button(
-            "다음",
-            icon=":material/arrow_forward:",
-            use_container_width=True,
-            disabled=choice is None,
-        ):
-            st.session_state.responses[current["question_id"]] = choice
-            st.rerun()
+    diagnose_controls(current, answer_key, answered_ids)
 
 elif st.session_state.step == "context":
+    render_stage_bar("context", "선택")
     st.markdown('<div class="page-section-chip">추가 정보 입력</div>', unsafe_allow_html=True)
     st.markdown(
         """
@@ -1158,6 +634,7 @@ elif st.session_state.step == "context":
         unsafe_allow_html=True,
     )
 
+    st.space("medium")
     with st.container(border=True):
         st.markdown('<p class="optional-field-label">최종 학력</p>', unsafe_allow_html=True)
         education = st.selectbox(
@@ -1194,37 +671,86 @@ elif st.session_state.step == "context":
             key="context_work_style_select",
         )
 
+    st.space("medium")
     with st.container(horizontal=True):
-        if st.button("이전", icon=":material/arrow_back:"):
-            go("diagnose")
-            st.rerun()
-        if st.button("결과 보기", type="primary", icon=":material/insights:"):
-            st.session_state.context = {
-                "education": None if education == "미입력" else education,
-                "career": None if career == "미입력" else career,
-                "region": region,
-                "work_style": None if work_style in {None, "미입력"} else work_style,
-            }
-            user_vector, _clusters = build_user_profile(questions_payload, st.session_state.responses)
-            ranked = rank_job_families(user_vector, profiles_payload["job_families"])
-            st.session_state.user_vector = user_vector
-            st.session_state.recommendations = ranked
-            go("result")
-            st.rerun()
+        st.button("이전", icon=":material/arrow_back:", on_click=go, args=("diagnose",))
+        st.button(
+            "결과 보기",
+            type="primary",
+            icon=":material/wb_sunny:",
+            on_click=_compute_and_show_result,
+        )
 
 elif st.session_state.step == "result":
+    render_stage_bar("result", "완료")
+    recs = st.session_state.recommendations or []
+    top_name = recs[0]["name"] if recs else "이 직군"
+    rank_tiles = []
+    for item in recs[:5]:
+        cls = " first" if item["rank"] == 1 else ""
+        rank_tiles.append(
+            f'<span class="{cls.strip()}">{item["rank"]:02d}<br/>{escape_html(item["name"])}</span>'
+        )
+
     st.markdown(
-        """
+        f"""
         <div class="result-hero">
-          <p class="result-hero-title">지금 더 탐색해 볼 직군</p>
+          <p class="kicker">{escape_html(SCREEN["result_top"])}</p>
+          <p class="result-hero-title"><span>여기서부터</span><span>실제로 들여다보면 돼요</span></p>
           <p class="result-hero-sub">답변을 기준으로 우선 살펴볼 만한 TOP 5를 정리했어요.</p>
         </div>
         """,
         unsafe_allow_html=True,
     )
-    st.info(DISCLAIMER)
+    if rank_tiles:
+        st.markdown(f'<div class="rank-strip">{"".join(rank_tiles)}</div>', unsafe_allow_html=True)
+    st.space("medium")
+    st.markdown(
+        f"""
+        <div class="dawn-next">
+          <h3>{escape_html(copy["result"]["actions_heading"])}</h3>
+          <p>{escape_html(top_name)} 공고와 하루 업무를 한 번만 구체적으로 열어 보세요. 점수를 더 보는 것보다, 실제 일을 보는 쪽이 다음 한 걸음입니다.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.space("medium")
+    st.markdown(
+        f'<div class="dawn-notice">{escape_html(DISCLAIMER)}</div>',
+        unsafe_allow_html=True,
+    )
+    if st.session_state.get("heard"):
+        heard = st.session_state.heard
+        contrast_html = (
+            f'<p class="personality-type-note">{escape_html(heard["contrast"])}</p>'
+            if heard.get("contrast")
+            else ""
+        )
+        st.markdown(
+            f"""
+            <div class="personality-type-box">
+              <p class="personality-type-desc">{escape_html(heard["headline"])}</p>
+              {contrast_html}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    if st.session_state.get("prior_test"):
+        items = "".join(f"<li>{escape_html(line)}</li>" for line in st.session_state.prior_test)
+        st.markdown(
+            f"""
+            <div class="personality-type-box">
+              <p class="personality-type-desc">기존 자기 이해 정보</p>
+              <ul class="personality-insight-list">{items}</ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     if st.session_state.recommendations and st.session_state.recommendations[0].get("close_score"):
-        st.warning("1위와 2위의 점수 차이가 작습니다. 단정하지 말고 두 직군을 함께 보세요.")
+        st.markdown(
+            '<div class="dawn-notice dawn-notice-soft">1위와 2위의 점수 차이가 작습니다. 단정하지 말고 두 직군을 함께 보세요.</div>',
+            unsafe_allow_html=True,
+        )
 
     if st.session_state.user_vector:
         profile = personality_profile(st.session_state.user_vector)
@@ -1235,7 +761,6 @@ elif st.session_state.step == "result":
             )
             render_personality_type_box(profile["type"]["description"], profile["type"]["combo_note"])
 
-            st.markdown('<div class="personality-radar-box">', unsafe_allow_html=True)
             radar = pgo.Figure()
             radar.add_trace(
                 pgo.Scatterpolar(
@@ -1243,36 +768,55 @@ elif st.session_state.step == "result":
                     theta=profile["radar"]["axes"],
                     fill="toself",
                     name="내 프로파일",
-                    line_color="#0b5cab",
-                    fillcolor="rgba(11, 92, 171, 0.22)",
+                    line_color="#c4923a",
+                    fillcolor="rgba(225, 178, 97, 0.32)",
                 )
             )
             radar.update_layout(
-                polar=dict(radialaxis=dict(visible=True, range=[0, 100], gridcolor="#d7e9ff")),
-                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#18344b", size=12),
+                polar=dict(
+                    bgcolor="rgba(255, 253, 248, 0.55)",
+                    radialaxis=dict(
+                        visible=True,
+                        range=[0, 100],
+                        gridcolor="#d4c4a0",
+                        linecolor="#8a7350",
+                        tickfont=dict(color="#18344b", size=11),
+                    ),
+                    angularaxis=dict(
+                        gridcolor="#d4c4a0",
+                        linecolor="#8a7350",
+                        tickfont=dict(color="#18344b", size=12),
+                    ),
+                ),
+                paper_bgcolor="rgba(255, 253, 248, 0.92)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 showlegend=False,
-                margin=dict(l=20, r=20, t=20, b=20),
+                margin=dict(l=90, r=90, t=48, b=48),
+                height=520,
             )
-            st.plotly_chart(radar, use_container_width=True)
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.plotly_chart(
+                radar,
+                width="stretch",
+                theme=None,
+                config={"displayModeBar": False},
+            )
 
-            insight_cols = st.columns(2, gap="medium")
-            with insight_cols[0]:
-                render_personality_insight_box(
-                    "strengths",
-                    profile["strengths_heading"],
-                    profile["strengths"],
-                    "✨",
-                )
-            with insight_cols[1]:
-                render_personality_insight_box(
-                    "unfamiliar",
-                    profile["growth_points_heading"],
-                    profile["growth_points"],
-                    "🌱",
-                    profile["growth_points_note"],
-                )
+            render_personality_insight_box(
+                "strengths",
+                profile["strengths_heading"],
+                profile["strengths"],
+                "✨",
+                expanded=True,
+            )
+            render_personality_insight_box(
+                "unfamiliar",
+                profile["growth_points_heading"],
+                profile["growth_points"],
+                "🌱",
+                profile["growth_points_note"],
+                expanded=False,
+            )
 
     for item in st.session_state.recommendations:
         explained = explain_recommendation(
@@ -1291,55 +835,52 @@ elif st.session_state.step == "result":
                 <span class="result-rank-badge">{rank_style['emoji']} {item['rank']}. {item['name']}</span>
                 <span class="result-score-pill">{item['total']:.0f}/100</span>
             </div>
-            <span class="result-band-chip" style="background:{rank_style['accent']}22;color:{rank_style['accent']};">
-                {band_label}
-            </span>
+            <span class="result-band-chip">{band_label}</span>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        render_result_section(
-            "reasons",
-            copy["result"]["reasons_heading"],
-            explained["reasons"],
-            "💡",
-        )
-
-        render_result_section(
-            "cautions",
-            copy["result"]["cautions_heading"],
-            explained["cautions"],
-            "🚩",
-        )
-
-        render_result_section(
-            "actions",
-            copy["result"]["actions_heading"],
-            explained["actions"],
-            "🚀",
-        )
-
-        render_result_section(
-            "growth",
-            copy["result"]["growth_heading"],
-            explained["growth"],
-            "📈",
-        )
-
-        if explained["glossary"]:
+        looking_at = item["rank"] == 1
+        with st.expander("직군 설명 보기", expanded=looking_at):
             render_result_section(
-                "glossary",
-                copy["result"]["glossary_heading"],
-                explained["glossary"],
-                "📘",
+                "reasons",
+                copy["result"]["reasons_heading"],
+                explained["reasons"],
+                "💡",
+                expanded=looking_at,
             )
+            render_result_section(
+                "cautions",
+                copy["result"]["cautions_heading"],
+                explained["cautions"],
+                "🚩",
+            )
+            render_result_section(
+                "actions",
+                copy["result"]["actions_heading"],
+                explained["actions"],
+                "🚀",
+            )
+            render_result_section(
+                "growth",
+                copy["result"]["growth_heading"],
+                explained["growth"],
+                "📈",
+            )
+            if explained["glossary"]:
+                render_result_section(
+                    "glossary",
+                    copy["result"]["glossary_heading"],
+                    explained["glossary"],
+                    "📘",
+                )
 
         if st.button(
             "연관 직업 보기",
             key=f"open_{item['job_family_id']}",
             icon=":material/work:",
-            use_container_width=True,
+            width="stretch",
         ):
             st.session_state.selected_job_id = item["job_family_id"]
             go("detail")
@@ -1362,22 +903,17 @@ elif st.session_state.step == "detail":
         go("result")
         st.rerun()
     else:
+        render_stage_bar("result", "완료")
         family = next(item for item in profiles_payload["job_families"] if item["job_family_id"] == selected["job_family_id"])
-        detail = job_family_detail(selected["job_family_id"])
+        detail = engine.get_family_detail(selected["job_family_id"], st.session_state.session_id)
         st.markdown(
             f"""
             <div class="detail-hero">
+              <p class="detail-kicker">추천 직군</p>
               <p class="detail-hero-title">{escape_html(selected["name"])}</p>
               <p class="detail-hero-sub">{escape_html(family["description"])}</p>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            """
-            <div class="detail-section-title-box">
-              <p class="detail-section-title">연관 직업</p>
-            </div>
+            <p class="detail-section-title">연관 직업</p>
             """,
             unsafe_allow_html=True,
         )
@@ -1403,7 +939,7 @@ elif st.session_state.step == "detail":
 
             source_html = (
                 f"<p class='detail-occupation-hint'>출처: {escape_html(source)}</p>"
-                if source
+                if source and "팀 검수 스냅샷" not in source
                 else ""
             )
 
@@ -1426,14 +962,14 @@ elif st.session_state.step == "detail":
                 f"{occupation['name']} 직업정보 보러가기",
                 occupation["source_url"],
                 icon=":material/open_in_new:",
-                use_container_width=True,
+                width="stretch",
             )
 
         if st.button(
             "결과로 돌아가기",
             icon=":material/arrow_back:",
             type="primary",
-            use_container_width=True,
+            width="stretch",
         ):
             go("result")
             st.rerun()
@@ -1448,6 +984,8 @@ elif st.session_state.step == "feedback":
     )
     if st.button("보내기", type="primary", icon=":material/send:"):
         st.session_state.feedback = {"helpful": helpful, "reason": reason}
+        if st.session_state.session_id:
+            engine.save_feedback(st.session_state.session_id, helpful, reason)
         st.success("기록했습니다. 개인 식별정보는 저장하지 않습니다.")
     if st.button("결과로 돌아가기", icon=":material/arrow_back:"):
         go("result")

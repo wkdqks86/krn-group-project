@@ -1,5 +1,20 @@
 [theme]
-primaryColor = "#0F766E"
-backgroundColor = "#FAFAF9"
-secondaryBackgroundColor = "#F5F5F4"
-textColor = "#1C1917"
+base = "dark"
+primaryColor = "#C4923A"
+backgroundColor = "#0B1324"
+secondaryBackgroundColor = "#142238"
+textColor = "#EFF5FF"
+borderColor = "#40516C"
+linkColor = "#EFC979"
+baseRadius = "0.75rem"
+buttonRadius = "10px"
+showSidebarBorder = true
+font = "Noto Sans KR:https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+headingFont = "Noto Sans KR:https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@600;700&display=swap"
+
+[theme.sidebar]
+backgroundColor = "#07101F"
+secondaryBackgroundColor = "#112038"
+textColor = "#D2DDF0"
+borderColor = "#43526B"
+primaryColor = "#E1B261"
