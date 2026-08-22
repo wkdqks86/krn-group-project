@@ -16,7 +16,7 @@ P4 Frontend/UX 관점에서 랜딩 → 선택 입력 → 진단 → 추가 정�
 - Streamlit `horizontal_alignment="center"`, `width="content"`, `wrap=False` 활용
 
 ### 2. 선택 입력 (`optional`)
-- 안내 문구·MBTI·애니어그램을 박스(`border` / note box)로 통일
+- 안내 문구·MBTI·에니어그램을 박스(`border` / note box)로 통일
 
 ### 3. 진단 (`diagnose`)
 - 제목/진행 UI: 응답 진행률, STEP·모듈·progress를 한 박스로 구성

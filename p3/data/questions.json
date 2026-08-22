@@ -1,0 +1,395 @@
+{
+  "schema_version": "2.0",
+  "question_version": "0.1",
+  "authored_by": "P2 진단·콘텐츠",
+  "authored_at": "2026-08-18",
+  "status": "draft-for-review",
+  "structure": {
+    "core": {"count": 14, "target_minutes": 3, "required": true},
+    "deep": {"count": "9~11 (분기 4 + 자기평가 5 + 현실조건 7입력)", "target_minutes": 4, "required": false}
+  },
+  "scales": {
+    "likert5": {
+      "type": "5점 척도",
+      "labels": ["전혀 아니다", "아닌 편이다", "보통이다", "그런 편이다", "매우 그렇다"],
+      "values": [1, 2, 3, 4, 5]
+    }
+  },
+  "clusters": {
+    "ANALYZE": {"label": "원인을 파고드는 쪽", "linked_riasec": ["I", "C"], "linked_competency": ["logical", "problem_solving"]},
+    "CREATE": {"label": "직접 만들어 보는 쪽", "linked_riasec": ["A", "R"], "linked_competency": ["problem_solving", "persistence"]},
+    "ORCHESTRATE": {"label": "사람과 일정을 맞추는 쪽", "linked_riasec": ["C", "S"], "linked_competency": ["collaboration", "persistence"]},
+    "PERSUADE": {"label": "설득해서 움직이는 쪽", "linked_riasec": ["E", "S"], "linked_competency": ["communication", "collaboration"]}
+  },
+  "normalization": {
+    "likert5_to_100": "score = (value - 1) / 4 * 100",
+    "likert5_reverse": "score = (5 - value) / 4 * 100",
+    "big5_axis": "해당 축 문항 점수의 산술평균",
+    "riasec_axis": {
+      "formula": "score = 30 + (raw / axis_max) * 70",
+      "raw": "실제 선택한 선택지의 riasec 가중치 누계",
+      "axis_max": "그 사용자에게 '실제로 노출된 문항'만 대상으로, 각 문항에서 그 축이 얻을 수 있는 최댓값의 합. 심화를 건너뛰면 코어 문항만으로 계산한다.",
+      "axis_max_zero": "axis_max가 0이면 그 축은 측정 불가로 보고 중립 50을 준다",
+      "floor_note": "최저 30을 준 이유는, 한 번도 선택되지 않은 축을 0으로 두면 element_fit이 과도하게 무너져 특정 직군이 구조적으로 하위에 고정되기 때문이다.",
+      "denominator_note": "고정 분모를 쓰면 안 된다. 코어 14문항 기준 축별 최대 획득 점수가 I=11, E=11, C=9, S=9, A=8, R=7로 불균등해서, 고정 분모를 쓰면 R 비중이 큰 J09 제조·엔지니어링이 구조적으로 하위에 고정된다.",
+      "core_axis_max_reference": {"R": 7, "I": 11, "A": 8, "S": 9, "E": 11, "C": 9}
+    },
+    "competency_axis": {
+      "core": "행동신호(SJT) 100% : score = 30 + (raw / axis_max) * 70",
+      "deep": "자기평가 60% + 행동신호 40%",
+      "axis_max": "riasec와 동일하게, 실제 노출된 문항 기준으로 동적 계산한다",
+      "core_axis_max_reference": {"problem_solving": 7, "logical": 8, "collaboration": 8, "communication": 8, "persistence": 5},
+      "note": "코어 단계에서는 자기평가 문항이 없으므로 confidence를 low로 표시하고, 결과 화면에 '조금 더 답하면 결과가 좀 더 선명해져요'를 노출한다."
+    },
+    "context_axis": {
+      "environment": "1~5 원값 그대로 사용 (직군 environment와 직접 비교)",
+      "skipped": "미입력은 중립 50으로 처리하고 배제하지 않는다"
+    }
+  },
+  "fit_formula": {
+    "full": "Fit(j) = 0.25*InterestFit + 0.35*CompetencyFit + 0.20*PersonalityFit + 0.20*ContextFit",
+    "core_only": "ContextFit 미측정 → 남은 3항목을 합 1.0으로 재정규화: Interest 0.3125 / Competency 0.4375 / Personality 0.25",
+    "context_composition": "ContextFit = 0.70 * 업무환경 4축 유사도 + 0.30 * (지역·연봉·경력 규칙 점수)",
+    "tie_break": "점수 차 3점 미만이면 동등 탐색군으로 안내. 동점은 CompetencyFit → InterestFit → 직군 ID 순으로 정렬한다."
+  },
+  "questions": [
+    {
+      "question_id": "Q01", "stage": "core", "module": "big5", "order": 1,
+      "type": "likert5", "axis": "O", "reverse": false,
+      "prompt": "새로운 방식이나 낯선 도구를 먼저 시험해 보는 편이다."
+    },
+    {
+      "question_id": "Q02", "stage": "core", "module": "big5", "order": 2,
+      "type": "likert5", "axis": "C", "reverse": false,
+      "prompt": "할 일을 정하면 마감 전에 여유를 두고 끝내는 편이다."
+    },
+    {
+      "question_id": "Q03", "stage": "core", "module": "big5", "order": 3,
+      "type": "likert5", "axis": "E", "reverse": false,
+      "prompt": "처음 만난 사람들 사이에서도 먼저 말을 거는 편이다."
+    },
+    {
+      "question_id": "Q04", "stage": "core", "module": "big5", "order": 4,
+      "type": "likert5", "axis": "A", "reverse": false,
+      "prompt": "내 생각과 다르더라도 상대의 사정을 먼저 들어보는 편이다."
+    },
+    {
+      "question_id": "Q05", "stage": "core", "module": "big5", "order": 5,
+      "type": "likert5", "axis": "ES", "reverse": true,
+      "prompt": "예상하지 못한 문제가 생기면 한동안 마음이 가라앉지 않는다."
+    },
+    {
+      "question_id": "Q06", "stage": "core", "module": "big5", "order": 6,
+      "type": "likert5", "axis": "C", "reverse": true,
+      "prompt": "여러 일이 겹치면 무엇부터 할지 정하지 못하고 미루는 편이다."
+    },
+
+    {
+      "question_id": "Q07", "stage": "core", "module": "riasec", "order": 7,
+      "type": "single_choice",
+      "prompt": "다음 중 오래 해도 덜 지칠 것 같은 활동은?",
+      "options": [
+        {"option_id": "Q07A", "label": "자료와 수치를 뜯어본다", "score_map": {"riasec": {"I": 2, "C": 1}}},
+        {"option_id": "Q07B", "label": "사람의 고민을 듣는다", "score_map": {"riasec": {"S": 2, "A": 1}}},
+        {"option_id": "Q07C", "label": "메시지나 이미지를 만든다", "score_map": {"riasec": {"A": 2, "E": 1}}},
+        {"option_id": "Q07D", "label": "절차와 문서를 정리한다", "score_map": {"riasec": {"C": 2, "I": 1}}}
+      ]
+    },
+    {
+      "question_id": "Q08", "stage": "core", "module": "riasec", "order": 8,
+      "type": "single_choice",
+      "prompt": "여유 시간이 생겼습니다. 더 끌리는 쪽은?",
+      "options": [
+        {"option_id": "Q08A", "label": "손으로 뭔가를 만들거나 고친다", "score_map": {"riasec": {"R": 2, "I": 1}}},
+        {"option_id": "Q08B", "label": "궁금한 주제를 파고들어 찾아본다", "score_map": {"riasec": {"I": 2, "C": 1}}},
+        {"option_id": "Q08C", "label": "사람들을 모아 뭔가를 벌인다", "score_map": {"riasec": {"E": 2, "S": 1}}},
+        {"option_id": "Q08D", "label": "전시나 워크숍처럼 새로운 걸 보러 간다", "score_map": {"riasec": {"A": 2, "S": 1}}}
+      ]
+    },
+    {
+      "question_id": "Q09", "stage": "core", "module": "riasec", "order": 9,
+      "type": "single_choice",
+      "prompt": "팀으로 일할 때 자연스럽게 맡게 되는 역할은?",
+      "options": [
+        {"option_id": "Q09A", "label": "자료 정리하고 근거를 찾아오는 사람", "score_map": {"riasec": {"I": 2, "C": 1}}},
+        {"option_id": "Q09B", "label": "분위기 챙기고 갈등을 푸는 사람", "score_map": {"riasec": {"S": 2, "A": 1}}},
+        {"option_id": "Q09C", "label": "방향을 정하고 밀어붙이는 사람", "score_map": {"riasec": {"E": 2, "S": 1}}},
+        {"option_id": "Q09D", "label": "일정과 양식을 관리하는 사람", "score_map": {"riasec": {"C": 2, "R": 1}}}
+      ]
+    },
+    {
+      "question_id": "Q10", "stage": "core", "module": "riasec", "order": 10,
+      "type": "single_choice",
+      "prompt": "일이 잘 풀렸을 때 가장 뿌듯한 순간은?",
+      "options": [
+        {"option_id": "Q10A", "label": "복잡하던 게 명쾌하게 설명될 때", "score_map": {"riasec": {"I": 2, "C": 1}}},
+        {"option_id": "Q10B", "label": "내가 만든 걸 누군가 좋아할 때", "score_map": {"riasec": {"A": 2, "S": 1}}},
+        {"option_id": "Q10C", "label": "실제로 돌아가고 작동할 때", "score_map": {"riasec": {"R": 2, "I": 1}}},
+        {"option_id": "Q10D", "label": "상대가 마음을 바꿔 함께하게 될 때", "score_map": {"riasec": {"E": 2, "S": 1}}}
+      ]
+    },
+
+    {
+      "question_id": "Q11", "stage": "core", "module": "sjt", "order": 11, "branch_trigger": true,
+      "prompt": "한 서비스에서 사람들이 자꾸 빠져나갑니다. 먼저 다뤄 보고 싶은 건?",
+      "type": "single_choice",
+      "options": [
+        {"option_id": "Q11A", "label": "데이터를 뜯어 원인을 찾는다", "cluster": "ANALYZE", "score_map": {"competency": {"logical": 2, "problem_solving": 1}, "riasec": {"I": 1}}},
+        {"option_id": "Q11B", "label": "사용자를 만나 불편한 지점을 듣는다", "cluster": "CREATE", "score_map": {"competency": {"problem_solving": 2, "communication": 1}, "riasec": {"S": 1}}},
+        {"option_id": "Q11C", "label": "팀과 실행 계획부터 정리한다", "cluster": "ORCHESTRATE", "score_map": {"competency": {"collaboration": 2, "persistence": 1}, "riasec": {"C": 1}}},
+        {"option_id": "Q11D", "label": "고객에게 직접 해결책을 설명한다", "cluster": "PERSUADE", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+    {
+      "question_id": "Q12", "stage": "core", "module": "sjt", "order": 12, "branch_trigger": true,
+      "prompt": "프로젝트 일정이 밀리고 있습니다. 첫 행동은?",
+      "type": "single_choice",
+      "options": [
+        {"option_id": "Q12A", "label": "어디서 지연됐는지 기록부터 확인한다", "cluster": "ANALYZE", "score_map": {"competency": {"logical": 2, "problem_solving": 1}, "riasec": {"I": 1}}},
+        {"option_id": "Q12B", "label": "꼭 필요한 것만 남기고 범위를 줄인다", "cluster": "CREATE", "score_map": {"competency": {"problem_solving": 2, "persistence": 1}, "riasec": {"R": 1}}},
+        {"option_id": "Q12C", "label": "역할을 다시 나누고 일정을 새로 짠다", "cluster": "ORCHESTRATE", "score_map": {"competency": {"collaboration": 2, "persistence": 1}, "riasec": {"C": 1}}},
+        {"option_id": "Q12D", "label": "관련된 사람들에게 상황을 알리고 합의를 얻는다", "cluster": "PERSUADE", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+    {
+      "question_id": "Q13", "stage": "core", "module": "sjt", "order": 13, "branch_trigger": true,
+      "prompt": "낸 아이디어에 반응이 미지근합니다. 다음에 할 일은?",
+      "type": "single_choice",
+      "options": [
+        {"option_id": "Q13A", "label": "근거 자료를 더 모아 다시 설명한다", "cluster": "ANALYZE", "score_map": {"competency": {"logical": 2, "persistence": 1}, "riasec": {"I": 1}}},
+        {"option_id": "Q13B", "label": "작게라도 만들어서 직접 보여준다", "cluster": "CREATE", "score_map": {"competency": {"problem_solving": 2, "persistence": 1}, "riasec": {"A": 1}}},
+        {"option_id": "Q13C", "label": "반대 이유를 하나씩 듣고 계획을 고친다", "cluster": "ORCHESTRATE", "score_map": {"competency": {"collaboration": 2, "communication": 1}, "riasec": {"S": 1}}},
+        {"option_id": "Q13D", "label": "결정할 수 있는 사람을 따로 만나 설득한다", "cluster": "PERSUADE", "score_map": {"competency": {"communication": 2, "problem_solving": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+    {
+      "question_id": "Q14", "stage": "core", "module": "sjt", "order": 14, "branch_trigger": true,
+      "prompt": "여러 일이 한꺼번에 들어왔습니다. 어떻게 하나요?",
+      "type": "single_choice",
+      "options": [
+        {"option_id": "Q14A", "label": "기준을 만들어 우선순위를 따진다", "cluster": "ANALYZE", "score_map": {"competency": {"logical": 2, "collaboration": 1}, "riasec": {"C": 1}}},
+        {"option_id": "Q14B", "label": "결과가 눈에 보이는 것부터 손댄다", "cluster": "CREATE", "score_map": {"competency": {"persistence": 2, "problem_solving": 1}, "riasec": {"R": 1}}},
+        {"option_id": "Q14C", "label": "나눠 맡기고 진행 상황을 챙긴다", "cluster": "ORCHESTRATE", "score_map": {"competency": {"collaboration": 2, "communication": 1}, "riasec": {"E": 1}}},
+        {"option_id": "Q14D", "label": "요청한 사람들과 기한을 다시 조정한다", "cluster": "PERSUADE", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"S": 1}}}
+      ]
+    },
+
+    {
+      "question_id": "D-AN-1", "stage": "deep", "module": "sjt_followup", "cluster": "ANALYZE",
+      "type": "single_choice",
+      "prompt": "원인을 찾다가 데이터가 서로 어긋납니다. 어떻게 하나요?",
+      "options": [
+        {"option_id": "D-AN-1A", "label": "수집 과정부터 다시 짚어 어디서 틀어졌는지 찾는다", "score_map": {"competency": {"logical": 2, "persistence": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-AN-1B", "label": "둘 다 맞을 수 있는 조건이 있는지 가정을 세운다", "score_map": {"competency": {"problem_solving": 2, "logical": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-AN-1C", "label": "데이터를 만든 담당자에게 직접 확인한다", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-AN-1D", "label": "일단 더 신뢰할 만한 쪽을 기준으로 정하고 진행한다", "score_map": {"competency": {"persistence": 2, "problem_solving": 1}, "riasec": {"C": 1}}}
+      ]
+    },
+    {
+      "question_id": "D-AN-2", "stage": "deep", "module": "sjt_followup", "cluster": "ANALYZE",
+      "type": "single_choice",
+      "prompt": "분석 결과가 나왔는데 팀의 기대와 정반대입니다.",
+      "options": [
+        {"option_id": "D-AN-2A", "label": "결과를 뒤집을 만한 반대 근거를 스스로 먼저 찾아본다", "score_map": {"competency": {"logical": 2, "persistence": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-AN-2B", "label": "숫자를 보기 쉽게 정리해 그대로 공유한다", "score_map": {"competency": {"communication": 2, "logical": 1}, "riasec": {"C": 1}}},
+        {"option_id": "D-AN-2C", "label": "왜 기대가 달랐는지 배경을 먼저 물어본다", "score_map": {"competency": {"collaboration": 2, "communication": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-AN-2D", "label": "결과를 근거로 다음에 할 일을 제안한다", "score_map": {"competency": {"problem_solving": 2, "communication": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+    {
+      "question_id": "D-AN-3", "stage": "deep", "module": "sjt_followup", "cluster": "ANALYZE",
+      "type": "single_choice",
+      "prompt": "같은 확인 작업을 매주 반복해야 합니다.",
+      "options": [
+        {"option_id": "D-AN-3A", "label": "자동으로 돌아가게 만드는 방법을 찾아본다", "score_map": {"competency": {"problem_solving": 2, "logical": 1}, "riasec": {"R": 1}}},
+        {"option_id": "D-AN-3B", "label": "체크리스트로 만들어 빠뜨림 없이 반복한다", "score_map": {"competency": {"persistence": 2, "logical": 1}, "riasec": {"C": 1}}},
+        {"option_id": "D-AN-3C", "label": "정말 매주 필요한 일인지부터 다시 따져본다", "score_map": {"competency": {"logical": 2, "problem_solving": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-AN-3D", "label": "팀에 나눠 돌아가며 맡는 구조를 제안한다", "score_map": {"competency": {"collaboration": 2, "communication": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+
+    {
+      "question_id": "D-CR-1", "stage": "deep", "module": "sjt_followup", "cluster": "CREATE",
+      "type": "single_choice",
+      "prompt": "만들어 본 시안에 '뭔가 아쉽다'는 피드백만 돌아왔습니다.",
+      "options": [
+        {"option_id": "D-CR-1A", "label": "몇 가지 버전을 더 만들어 반응을 본다", "score_map": {"competency": {"persistence": 2, "problem_solving": 1}, "riasec": {"A": 1}}},
+        {"option_id": "D-CR-1B", "label": "아쉬운 지점이 어디인지 하나씩 짚어 되묻는다", "score_map": {"competency": {"communication": 2, "problem_solving": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-CR-1C", "label": "비슷한 사례를 모아 기준부터 맞춘다", "score_map": {"competency": {"logical": 2, "collaboration": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-CR-1D", "label": "쓸 사람 몇 명에게 직접 보여주고 고른다", "score_map": {"competency": {"collaboration": 2, "communication": 1}, "riasec": {"S": 1}}}
+      ]
+    },
+    {
+      "question_id": "D-CR-2", "stage": "deep", "module": "sjt_followup", "cluster": "CREATE",
+      "type": "single_choice",
+      "prompt": "시간이 부족해 완성도를 다 채울 수 없습니다.",
+      "options": [
+        {"option_id": "D-CR-2A", "label": "가장 눈에 띄는 부분에 힘을 몰아준다", "score_map": {"competency": {"problem_solving": 2, "persistence": 1}, "riasec": {"A": 1}}},
+        {"option_id": "D-CR-2B", "label": "쓰는 데 문제없는 수준까지만 맞추고 마감한다", "score_map": {"competency": {"persistence": 2, "logical": 1}, "riasec": {"C": 1}}},
+        {"option_id": "D-CR-2C", "label": "무엇을 뺄지 팀과 먼저 합의한다", "score_map": {"competency": {"collaboration": 2, "communication": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-CR-2D", "label": "기한을 늘려 달라고 요청해 본다", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+    {
+      "question_id": "D-CR-3", "stage": "deep", "module": "sjt_followup", "cluster": "CREATE",
+      "type": "single_choice",
+      "prompt": "직접 만든 결과물이 생각만큼 쓰이지 않습니다.",
+      "options": [
+        {"option_id": "D-CR-3A", "label": "어디서 막히는지 사용 기록을 확인한다", "score_map": {"competency": {"logical": 2, "problem_solving": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-CR-3B", "label": "쓰는 사람 옆에서 직접 지켜본다", "score_map": {"competency": {"problem_solving": 2, "communication": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-CR-3C", "label": "다르게 만든 버전을 하나 더 내놓는다", "score_map": {"competency": {"persistence": 2, "problem_solving": 1}, "riasec": {"A": 1}}},
+        {"option_id": "D-CR-3D", "label": "쓸 만하다는 걸 알리는 데 힘을 쓴다", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+
+    {
+      "question_id": "D-OR-1", "stage": "deep", "module": "sjt_followup", "cluster": "ORCHESTRATE",
+      "type": "single_choice",
+      "prompt": "두 팀이 서로 상대 탓을 하며 일이 멈췄습니다.",
+      "options": [
+        {"option_id": "D-OR-1A", "label": "누가 무엇을 언제까지 하는지 표로 정리해 붙인다", "score_map": {"competency": {"collaboration": 2, "logical": 1}, "riasec": {"C": 1}}},
+        {"option_id": "D-OR-1B", "label": "양쪽 이야기를 따로 듣고 접점을 찾는다", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-OR-1C", "label": "실제로 어디서 멈췄는지 기록을 확인한다", "score_map": {"competency": {"logical": 2, "problem_solving": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-OR-1D", "label": "일단 결정해 줄 사람을 불러 정리한다", "score_map": {"competency": {"problem_solving": 2, "communication": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+    {
+      "question_id": "D-OR-2", "stage": "deep", "module": "sjt_followup", "cluster": "ORCHESTRATE",
+      "type": "single_choice",
+      "prompt": "정해 둔 절차를 팀원들이 자꾸 건너뜁니다.",
+      "options": [
+        {"option_id": "D-OR-2A", "label": "왜 건너뛰는지 이유부터 모은다", "score_map": {"competency": {"communication": 2, "problem_solving": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-OR-2B", "label": "절차 자체를 더 간단하게 고친다", "score_map": {"competency": {"problem_solving": 2, "logical": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-OR-2C", "label": "지켜지는지 확인하는 단계를 넣는다", "score_map": {"competency": {"persistence": 2, "collaboration": 1}, "riasec": {"C": 1}}},
+        {"option_id": "D-OR-2D", "label": "지켰을 때 뭐가 좋은지 사례로 설득한다", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+    {
+      "question_id": "D-OR-3", "stage": "deep", "module": "sjt_followup", "cluster": "ORCHESTRATE",
+      "type": "single_choice",
+      "prompt": "맡은 일이 눈에 잘 안 띄는 뒷단 정리 작업입니다.",
+      "options": [
+        {"option_id": "D-OR-3A", "label": "티가 안 나도 끝까지 기준대로 맞춰 둔다", "score_map": {"competency": {"persistence": 2, "logical": 1}, "riasec": {"C": 1}}},
+        {"option_id": "D-OR-3B", "label": "정리한 결과가 뭘 막았는지 팀에 공유한다", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"E": 1}}},
+        {"option_id": "D-OR-3C", "label": "다음부터 안 쌓이게 구조를 바꾼다", "score_map": {"competency": {"problem_solving": 2, "logical": 1}, "riasec": {"R": 1}}},
+        {"option_id": "D-OR-3D", "label": "혼자 다 하지 않게 나눠 맡긴다", "score_map": {"competency": {"collaboration": 2, "persistence": 1}, "riasec": {"S": 1}}}
+      ]
+    },
+
+    {
+      "question_id": "D-PE-1", "stage": "deep", "module": "sjt_followup", "cluster": "PERSUADE",
+      "type": "single_choice",
+      "prompt": "설득하던 상대가 끝내 거절했습니다.",
+      "options": [
+        {"option_id": "D-PE-1A", "label": "거절 이유를 정리해 두고 다음 기회를 준비한다", "score_map": {"competency": {"persistence": 2, "logical": 1}, "riasec": {"C": 1}}},
+        {"option_id": "D-PE-1B", "label": "관계는 유지하면서 계속 연락을 이어간다", "score_map": {"competency": {"communication": 2, "collaboration": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-PE-1C", "label": "다른 조건으로 바꿔 바로 다시 제안한다", "score_map": {"competency": {"problem_solving": 2, "communication": 1}, "riasec": {"E": 1}}},
+        {"option_id": "D-PE-1D", "label": "가능성이 더 높은 다른 상대로 옮긴다", "score_map": {"competency": {"persistence": 2, "problem_solving": 1}, "riasec": {"E": 1}}}
+      ]
+    },
+    {
+      "question_id": "D-PE-2", "stage": "deep", "module": "sjt_followup", "cluster": "PERSUADE",
+      "type": "single_choice",
+      "prompt": "상대가 원하는 것과 우리가 줄 수 있는 것이 다릅니다.",
+      "options": [
+        {"option_id": "D-PE-2A", "label": "가능한 선을 솔직하게 먼저 말한다", "score_map": {"competency": {"communication": 2, "persistence": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-PE-2B", "label": "내부에 가능한지 확인해 방법을 찾아본다", "score_map": {"competency": {"problem_solving": 2, "collaboration": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-PE-2C", "label": "다른 방식으로 같은 효과를 낼 대안을 제시한다", "score_map": {"competency": {"problem_solving": 2, "communication": 1}, "riasec": {"E": 1}}},
+        {"option_id": "D-PE-2D", "label": "결정 기준을 함께 정리해 같이 판단한다", "score_map": {"competency": {"collaboration": 2, "logical": 1}, "riasec": {"C": 1}}}
+      ]
+    },
+    {
+      "question_id": "D-PE-3", "stage": "deep", "module": "sjt_followup", "cluster": "PERSUADE",
+      "type": "single_choice",
+      "prompt": "하루에도 여러 사람을 만나고 나면 어떤가요?",
+      "options": [
+        {"option_id": "D-PE-3A", "label": "오히려 기운이 나는 편이다", "score_map": {"competency": {"communication": 2, "persistence": 1}, "riasec": {"E": 1}}},
+        {"option_id": "D-PE-3B", "label": "괜찮지만 혼자 정리할 시간이 꼭 필요하다", "score_map": {"competency": {"logical": 2, "persistence": 1}, "riasec": {"I": 1}}},
+        {"option_id": "D-PE-3C", "label": "사람마다 다르지만 대체로 버틸 만하다", "score_map": {"competency": {"collaboration": 2, "communication": 1}, "riasec": {"S": 1}}},
+        {"option_id": "D-PE-3D", "label": "많이 지친다", "score_map": {"competency": {"persistence": 1}, "riasec": {"C": 1}}}
+      ]
+    },
+
+    {
+      "question_id": "D-SC-1", "stage": "deep", "module": "competency_self", "type": "likert5",
+      "competency": "problem_solving",
+      "prompt": "처음 보는 문제라도 어디서부터 손대야 할지 스스로 정할 수 있다."
+    },
+    {
+      "question_id": "D-SC-2", "stage": "deep", "module": "competency_self", "type": "likert5",
+      "competency": "logical",
+      "prompt": "복잡한 이야기를 들으면 원인과 결과를 나눠 정리할 수 있다."
+    },
+    {
+      "question_id": "D-SC-3", "stage": "deep", "module": "competency_self", "type": "likert5",
+      "competency": "collaboration",
+      "prompt": "생각이 다른 사람과도 결론을 만들어 본 경험이 있다."
+    },
+    {
+      "question_id": "D-SC-4", "stage": "deep", "module": "competency_self", "type": "likert5",
+      "competency": "communication",
+      "prompt": "내가 아는 내용을 모르는 사람 눈높이로 설명할 수 있다."
+    },
+    {
+      "question_id": "D-SC-5", "stage": "deep", "module": "competency_self", "type": "likert5",
+      "competency": "persistence",
+      "prompt": "성과가 바로 안 보여도 한동안 붙잡고 있을 수 있다."
+    },
+
+    {
+      "question_id": "C01", "stage": "deep", "module": "context", "type": "single_select", "required": false,
+      "prompt": "최종 학력",
+      "note": "추천 정렬에만 사용하고, 미입력해도 결과는 나옵니다.",
+      "options": ["고졸", "전문학사", "학사", "석사 이상", "미입력"]
+    },
+    {
+      "question_id": "C02", "stage": "deep", "module": "context", "type": "single_select", "required": false,
+      "prompt": "전공 계열",
+      "options": ["인문·사회", "상경", "공학", "자연·보건", "예체능", "기타", "미입력"]
+    },
+    {
+      "question_id": "C03", "stage": "deep", "module": "context", "type": "single_select", "required": false,
+      "prompt": "경력",
+      "options": ["신입", "1년 미만 경험 있음", "1~3년", "3년 이상", "미입력"]
+    },
+    {
+      "question_id": "C04", "stage": "deep", "module": "context", "type": "multi_select", "required": false,
+      "prompt": "일하고 싶은 지역 (여러 개 선택 가능)",
+      "options": ["서울", "경기·인천", "충청", "강원", "전라", "경상", "제주", "상관없음"]
+    },
+    {
+      "question_id": "C05", "stage": "deep", "module": "context", "type": "single_select", "required": false,
+      "prompt": "희망 연봉",
+      "options": ["2,400만원 미만", "2,400~3,000만원", "3,000~3,600만원", "3,600만원 이상", "상관없음"]
+    },
+    {
+      "question_id": "C06", "stage": "deep", "module": "context", "type": "likert5_group", "required": false,
+      "prompt": "이런 환경은 어느 쪽이 편한가요?",
+      "items": [
+        {"axis": "team_interaction", "left": "혼자 집중해서", "right": "여럿이 계속 맞춰가며"},
+        {"axis": "change_speed", "left": "안정적으로 예측되게", "right": "빠르게 계속 바뀌며"},
+        {"axis": "quantitative", "left": "말과 글 중심으로", "right": "숫자와 데이터 중심으로"},
+        {"axis": "face_to_face", "left": "화면 너머로", "right": "사람을 직접 만나며"}
+      ],
+      "note": "ContextFit의 70%를 차지하는 입력이다."
+    },
+    {
+      "question_id": "C07", "stage": "deep", "module": "context", "type": "multi_select", "required": false,
+      "prompt": "피하고 싶은 조건이 있나요? (선택)",
+      "options": ["교대·야간 근무", "잦은 출장", "실적 압박이 큰 환경", "장시간 대면 응대", "없음"],
+      "note": "MVP에서는 저장만 하고 자동 제외에 쓰지 않는다. '확인할 점' 문구 생성에만 사용한다."
+    }
+  ],
+  "branching_rule": {
+    "trigger": "코어 SJT 4문항(Q11~Q14)의 선택지 cluster를 +1씩 누적",
+    "select": "누적 상위 2개 클러스터를 고른다. 동점이면 먼저 선택한 클러스터를 우선한다.",
+    "expose": "선택된 클러스터별 후속 문항 3개 중 앞의 2개를 노출한다 (총 4문항)",
+    "guarantee": "어떤 경로를 타도 심화 문항 수는 4개로 동일하다. 코어 14 + 심화 4 + 자기평가 5 = 최대 23문항.",
+    "core_only_exit": "심화를 건너뛴 사용자도 코어 14문항만으로 결과가 완결된다."
+  },
+  "open_items": [
+    "Big Five 정서적 안정성(ES)이 코어에서 1문항뿐이라 신뢰도가 낮다. 심화에 ES 1문항 추가 여부를 P1과 결정 필요.",
+    "MBTI·애니어그램 선택 입력 화면(B)의 문구는 copy.md에 있으나, 점수에는 반영하지 않는다는 PRD 확정을 그대로 따랐다.",
+    "Q05·Q06 역문항 2개가 연속 배치되지 않도록 P4가 노출 순서를 셔플할 때 제약을 걸어야 한다."
+  ]
+}

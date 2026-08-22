@@ -31,6 +31,7 @@ def versions() -> dict[str, str]:
         "question_version": load("questions.json")["question_version"],
         "job_profile_version": load("job_profiles.json")["job_profile_version"],
         "occupation_version": load("occupations.json")["occupation_version"],
+        "copy_version": load("copy.json")["copy_version"],
     }
 
 

@@ -1,0 +1,593 @@
+{
+  "schema_version": "2.0",
+  "purpose": "PRD §15 공통 작업 규칙 — 대표 사용자 3명에 대해 기대 TOP 3를 합의하고, 엔진 변경마다 회귀 테스트한다.",
+  "authored_by": "P2 진단·콘텐츠",
+  "authored_at": "2026-08-18",
+  "note": "expected_top3는 scripts/reference_scoring.py의 실제 계산 결과다. P3 구현이 이 값과 다르면 둘 중 하나가 틀린 것이다.",
+  "personas": [
+    {
+      "id": "minji",
+      "name": "민지, 25세",
+      "summary": "문과 전공, 인턴 1회. 관심은 많지만 지원할 직군을 못 정함",
+      "core_answers": {
+        "Q01": 4,
+        "Q02": 3,
+        "Q03": 4,
+        "Q04": 5,
+        "Q05": 3,
+        "Q06": 3,
+        "Q07": "Q07B",
+        "Q08": "Q08D",
+        "Q09": "Q09B",
+        "Q10": "Q10B",
+        "Q11": "Q11B",
+        "Q12": "Q12D",
+        "Q13": "Q13C",
+        "Q14": "Q14D"
+      },
+      "expected_clusters": [
+        "PERSUADE",
+        "CREATE"
+      ],
+      "deep_answers": {
+        "D-PE-1": "D-PE-1B",
+        "D-PE-2": "D-PE-2A",
+        "D-CR-1": "D-CR-1B",
+        "D-CR-2": "D-CR-2C",
+        "D-SC-1": 3,
+        "D-SC-2": 3,
+        "D-SC-3": 4,
+        "D-SC-4": 4,
+        "D-SC-5": 3,
+        "C01": "학사",
+        "C02": "인문·사회",
+        "C03": "신입",
+        "C06": {
+          "team_interaction": 4,
+          "change_speed": 3,
+          "quantitative": 2,
+          "face_to_face": 4
+        }
+      },
+      "expected": {
+        "core": {
+          "confidence": "low",
+          "top3": [
+            {
+              "job_family_id": "J04",
+              "name": "디자인·콘텐츠",
+              "total": 82.7,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J08",
+              "name": "교육·상담·공공서비스",
+              "total": 82.3,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J05",
+              "name": "마케팅·브랜딩",
+              "total": 79.6,
+              "band": "가까움"
+            }
+          ],
+          "full_ranking": [
+            "J04",
+            "J08",
+            "J05",
+            "J06",
+            "J03",
+            "J10",
+            "J01",
+            "J02",
+            "J07",
+            "J09"
+          ]
+        },
+        "deep": {
+          "confidence": "high",
+          "top3": [
+            {
+              "job_family_id": "J08",
+              "name": "교육·상담·공공서비스",
+              "total": 82.8,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J04",
+              "name": "디자인·콘텐츠",
+              "total": 81.2,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J05",
+              "name": "마케팅·브랜딩",
+              "total": 77.9,
+              "band": "가까움"
+            }
+          ],
+          "full_ranking": [
+            "J08",
+            "J04",
+            "J05",
+            "J06",
+            "J03",
+            "J10",
+            "J07",
+            "J01",
+            "J02",
+            "J09"
+          ]
+        }
+      }
+    },
+    {
+      "id": "junho",
+      "name": "준호, 30세",
+      "summary": "영업 4년 후 사무/기획 직군 탐색. 지역·연봉 하락에 민감",
+      "core_answers": {
+        "Q01": 3,
+        "Q02": 4,
+        "Q03": 5,
+        "Q04": 4,
+        "Q05": 2,
+        "Q06": 2,
+        "Q07": "Q07D",
+        "Q08": "Q08C",
+        "Q09": "Q09C",
+        "Q10": "Q10D",
+        "Q11": "Q11D",
+        "Q12": "Q12C",
+        "Q13": "Q13D",
+        "Q14": "Q14C"
+      },
+      "expected_clusters": [
+        "PERSUADE",
+        "ORCHESTRATE"
+      ],
+      "deep_answers": {
+        "D-PE-1": "D-PE-1C",
+        "D-PE-2": "D-PE-2C",
+        "D-OR-1": "D-OR-1B",
+        "D-OR-2": "D-OR-2D",
+        "D-SC-1": 4,
+        "D-SC-2": 3,
+        "D-SC-3": 4,
+        "D-SC-4": 5,
+        "D-SC-5": 4,
+        "C01": "학사",
+        "C02": "상경",
+        "C03": "3년 이상",
+        "C06": {
+          "team_interaction": 4,
+          "change_speed": 3,
+          "quantitative": 3,
+          "face_to_face": 4
+        }
+      },
+      "expected": {
+        "core": {
+          "confidence": "low",
+          "top3": [
+            {
+              "job_family_id": "J06",
+              "name": "영업·고객성공",
+              "total": 84.7,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J05",
+              "name": "마케팅·브랜딩",
+              "total": 81.7,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J03",
+              "name": "기획·프로덕트",
+              "total": 80.4,
+              "band": "가까움"
+            }
+          ],
+          "full_ranking": [
+            "J06",
+            "J05",
+            "J03",
+            "J08",
+            "J07",
+            "J04",
+            "J10",
+            "J02",
+            "J01",
+            "J09"
+          ]
+        },
+        "deep": {
+          "confidence": "high",
+          "top3": [
+            {
+              "job_family_id": "J06",
+              "name": "영업·고객성공",
+              "total": 87.2,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J05",
+              "name": "마케팅·브랜딩",
+              "total": 82.9,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J03",
+              "name": "기획·프로덕트",
+              "total": 81.7,
+              "band": "겹치는 데가 있음"
+            }
+          ],
+          "full_ranking": [
+            "J06",
+            "J05",
+            "J03",
+            "J08",
+            "J07",
+            "J10",
+            "J04",
+            "J09",
+            "J02",
+            "J01"
+          ]
+        }
+      }
+    },
+    {
+      "id": "seoyeon",
+      "name": "서연, 27세",
+      "summary": "디자인 전공, 포트폴리오 준비 중. UX가 맞는지 마케팅이 맞는지 감을 얻고 싶음",
+      "core_answers": {
+        "Q01": 5,
+        "Q02": 3,
+        "Q03": 3,
+        "Q04": 4,
+        "Q05": 3,
+        "Q06": 3,
+        "Q07": "Q07C",
+        "Q08": "Q08D",
+        "Q09": "Q09A",
+        "Q10": "Q10B",
+        "Q11": "Q11B",
+        "Q12": "Q12B",
+        "Q13": "Q13B",
+        "Q14": "Q14A"
+      },
+      "expected_clusters": [
+        "CREATE",
+        "ANALYZE"
+      ],
+      "deep_answers": {
+        "D-CR-1": "D-CR-1A",
+        "D-CR-2": "D-CR-2A",
+        "D-AN-1": "D-AN-1B",
+        "D-AN-2": "D-AN-2C",
+        "D-SC-1": 4,
+        "D-SC-2": 3,
+        "D-SC-3": 3,
+        "D-SC-4": 4,
+        "D-SC-5": 4,
+        "C01": "학사",
+        "C02": "예체능",
+        "C03": "신입",
+        "C06": {
+          "team_interaction": 3,
+          "change_speed": 4,
+          "quantitative": 2,
+          "face_to_face": 3
+        }
+      },
+      "expected": {
+        "core": {
+          "confidence": "low",
+          "top3": [
+            {
+              "job_family_id": "J04",
+              "name": "디자인·콘텐츠",
+              "total": 85.4,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J03",
+              "name": "기획·프로덕트",
+              "total": 76.1,
+              "band": "겹치는 데가 있음"
+            },
+            {
+              "job_family_id": "J01",
+              "name": "IT·소프트웨어",
+              "total": 76.0,
+              "band": "겹치는 데가 있음"
+            }
+          ],
+          "full_ranking": [
+            "J04",
+            "J03",
+            "J01",
+            "J05",
+            "J02",
+            "J08",
+            "J10",
+            "J07",
+            "J09",
+            "J06"
+          ]
+        },
+        "deep": {
+          "confidence": "high",
+          "top3": [
+            {
+              "job_family_id": "J04",
+              "name": "디자인·콘텐츠",
+              "total": 89.4,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J01",
+              "name": "IT·소프트웨어",
+              "total": 77.4,
+              "band": "겹치는 데가 있음"
+            },
+            {
+              "job_family_id": "J05",
+              "name": "마케팅·브랜딩",
+              "total": 76.9,
+              "band": "겹치는 데가 있음"
+            }
+          ],
+          "full_ranking": [
+            "J04",
+            "J01",
+            "J05",
+            "J03",
+            "J02",
+            "J08",
+            "J06",
+            "J10",
+            "J07",
+            "J09"
+          ]
+        }
+      }
+    },
+    {
+      "id": "taeyun",
+      "name": "태윤, 26세",
+      "summary": "기계공학 전공, 손으로 만들고 실제로 작동시키는 쪽 선호 — J09 커버리지 검증용",
+      "coverage_test": "J09 제조·엔지니어링이 1위에 도달할 수 있는지 확인한다. 도달 못 하면 J09 추가가 장식이 된다.",
+      "core_answers": {
+        "Q01": 3,
+        "Q02": 4,
+        "Q03": 2,
+        "Q04": 3,
+        "Q05": 2,
+        "Q06": 2,
+        "Q07": "Q07D",
+        "Q08": "Q08A",
+        "Q09": "Q09D",
+        "Q10": "Q10C",
+        "Q11": "Q11A",
+        "Q12": "Q12B",
+        "Q13": "Q13A",
+        "Q14": "Q14B"
+      },
+      "expected_clusters": [
+        "ANALYZE",
+        "CREATE"
+      ],
+      "deep_answers": {
+        "D-AN-1": "D-AN-1A",
+        "D-AN-2": "D-AN-2A",
+        "D-CR-1": "D-CR-1C",
+        "D-CR-2": "D-CR-2B",
+        "D-SC-1": 4,
+        "D-SC-2": 4,
+        "D-SC-3": 3,
+        "D-SC-4": 3,
+        "D-SC-5": 5,
+        "C06": {
+          "team_interaction": 3,
+          "change_speed": 2,
+          "quantitative": 4,
+          "face_to_face": 3
+        }
+      },
+      "expected": {
+        "core": {
+          "confidence": "low",
+          "top3": [
+            {
+              "job_family_id": "J09",
+              "name": "제조·엔지니어링",
+              "total": 86.7,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J01",
+              "name": "IT·소프트웨어",
+              "total": 84.6,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J02",
+              "name": "데이터·분석",
+              "total": 83.9,
+              "band": "가까움"
+            }
+          ],
+          "full_ranking": [
+            "J09",
+            "J01",
+            "J02",
+            "J07",
+            "J10",
+            "J03",
+            "J04",
+            "J08",
+            "J05",
+            "J06"
+          ]
+        },
+        "deep": {
+          "confidence": "high",
+          "top3": [
+            {
+              "job_family_id": "J09",
+              "name": "제조·엔지니어링",
+              "total": 86.4,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J01",
+              "name": "IT·소프트웨어",
+              "total": 84.0,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J02",
+              "name": "데이터·분석",
+              "total": 83.7,
+              "band": "가까움"
+            }
+          ],
+          "full_ranking": [
+            "J09",
+            "J01",
+            "J02",
+            "J07",
+            "J10",
+            "J03",
+            "J04",
+            "J05",
+            "J08",
+            "J06"
+          ]
+        }
+      }
+    },
+    {
+      "id": "haeun",
+      "name": "하은, 24세",
+      "summary": "보건계열 전공, 정확함과 사람이 함께 있는 쪽 선호 — J10 커버리지 검증용",
+      "coverage_test": "J10 보건·의료·바이오가 상위 3위 안에 드는지 확인한다.",
+      "core_answers": {
+        "Q01": 3,
+        "Q02": 5,
+        "Q03": 3,
+        "Q04": 5,
+        "Q05": 2,
+        "Q06": 2,
+        "Q07": "Q07B",
+        "Q08": "Q08B",
+        "Q09": "Q09D",
+        "Q10": "Q10C",
+        "Q11": "Q11A",
+        "Q12": "Q12C",
+        "Q13": "Q13C",
+        "Q14": "Q14A"
+      },
+      "expected_clusters": [
+        "ANALYZE",
+        "ORCHESTRATE"
+      ],
+      "deep_answers": {
+        "D-AN-1": "D-AN-1A",
+        "D-AN-2": "D-AN-2B",
+        "D-OR-1": "D-OR-1A",
+        "D-OR-2": "D-OR-2C",
+        "D-SC-1": 3,
+        "D-SC-2": 4,
+        "D-SC-3": 4,
+        "D-SC-4": 4,
+        "D-SC-5": 5,
+        "C06": {
+          "team_interaction": 4,
+          "change_speed": 2,
+          "quantitative": 4,
+          "face_to_face": 4
+        }
+      },
+      "expected": {
+        "core": {
+          "confidence": "low",
+          "top3": [
+            {
+              "job_family_id": "J07",
+              "name": "경영지원·운영",
+              "total": 83.4,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J10",
+              "name": "보건·의료·바이오",
+              "total": 82.0,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J09",
+              "name": "제조·엔지니어링",
+              "total": 81.2,
+              "band": "가까움"
+            }
+          ],
+          "full_ranking": [
+            "J07",
+            "J10",
+            "J09",
+            "J02",
+            "J01",
+            "J08",
+            "J03",
+            "J04",
+            "J05",
+            "J06"
+          ]
+        },
+        "deep": {
+          "confidence": "high",
+          "top3": [
+            {
+              "job_family_id": "J07",
+              "name": "경영지원·운영",
+              "total": 89.9,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J09",
+              "name": "제조·엔지니어링",
+              "total": 87.3,
+              "band": "가까움"
+            },
+            {
+              "job_family_id": "J10",
+              "name": "보건·의료·바이오",
+              "total": 86.7,
+              "band": "가까움"
+            }
+          ],
+          "full_ranking": [
+            "J07",
+            "J09",
+            "J10",
+            "J02",
+            "J08",
+            "J01",
+            "J03",
+            "J05",
+            "J04",
+            "J06"
+          ]
+        }
+      }
+    }
+  ],
+  "baseline_generated_at": "2026-08-18",
+  "baseline_note": "scripts/reference_scoring.py 실행 결과. P3 구현이 이 값과 다르면 둘 중 하나가 틀린 것이다. 문항·가중치를 고치면 이 파일도 함께 갱신하고 변경 사유를 남긴다.",
+  "known_limitation": "가중치가 한 축에 집중된 직군(J07 경영지원 riasec.C=0.50)이 가중치가 고르게 퍼진 직군(J10 보건·의료)보다 구조적으로 높은 점수를 낸다. 가중평균 적합도의 성질이다. 하은 페르소나에서 J10이 2위에 머물고 J07이 1위가 되는 원인이 이것이다. MVP에서는 그대로 두되, 발표 후 개선 후보로 남긴다."
+}

@@ -18,6 +18,8 @@ python -m venv .venv
 pip install -r requirements.txt
 streamlit run app.py
 pytest
+python -m pytest p3/tests -q
+python -m p3.manage check
 ```
 
 macOS / Linux:
@@ -45,7 +47,8 @@ pytest
 
 ```text
 krn-group-project/
-├─ app.py                  # Streamlit 화면 흐름 (A~G)
+├─ app.py                  # Streamlit 화면 흐름 (A~G). 채점은 engine.py만 호출
+├─ engine.py               # 세션·채점·상세·피드백 진입점 (12축 공식 유지)
 ├─ README.md
 ├─ requirements.txt
 ├─ .gitignore
@@ -53,6 +56,10 @@ krn-group-project/
 │  ├─ questions.json       # 문항·선택지·점수 맵 v0.1
 │  ├─ job_profiles.json    # 8개 직군 12축 요구 벡터·가중치
 │  └─ occupations.json     # 직군별 연관 직업 스냅샷
+├─ p3/                     # P3 v0.2 엔진 (P2 v2 콘텐츠). 화면 app.py와 분리
+│  ├─ engine.py            # 세션·채점·상세 진입점
+│  ├─ manage.py            # seed / demo / check / offline
+│  └─ data/                # P2 questions · job_profiles · result_copy
 ├─ domain/
 │  ├─ scoring.py           # 적합도 계산
 │  └─ branching.py         # SJT 분기
@@ -71,7 +78,7 @@ krn-group-project/
 | --- | --- | --- |
 | P1 PM·리서치 | 범위, 시나리오, 테스트 | `docs/decision-log.md`, README |
 | P2 진단·콘텐츠 | 문항, 직군 프로파일, 카피 | `data/*.json`, 결과 문구 |
-| P3 백엔드·엔진 | 점수, 분기, API, 테스트 | `domain/`, `services/`, `tests/` |
+| P3 백엔드·엔진 | 점수, 분기, API, 테스트 | `domain/`, `services/`, `tests/`, `p3/` |
 | P4 프론트엔드·UX | Streamlit 화면 | `app.py` |
 | P5 데이터·검증 | 직업 매핑, 라이선스, QA | `data/occupations.json`, `services/work24.py` |
 
@@ -107,6 +114,6 @@ krn-group-project/
 ## 현재 초안의 한계
 
 - 문항·직군 가중치는 팀 가설 v0.1 입니다. 공인 검사지를 복제하지 않았습니다.
-- SQLite 저장은 아직 넣지 않았습니다. 지금은 브라우저 세션에만 남습니다.
+- 진단 세션·응답·결과는 `engine.py`가 SQLite에 남깁니다. 이름·연락처는 저장하지 않습니다.
 - Work24 실시간 API는 P5가 키·엔드포인트 확정 후 연결합니다.
 - LLM 설명은 꺼 두고 템플릿 문장만 사용합니다.

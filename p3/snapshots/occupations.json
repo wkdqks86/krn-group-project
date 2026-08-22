@@ -1,0 +1,458 @@
+{
+  "schema_version": "1.0",
+  "snapshot_version": "0.1",
+  "authored_by": "P3 백엔드·엔진 (초안) → P5 데이터·검증이 채운다",
+  "authored_at": "2026-08-19",
+  "purpose": "Work24 API 장애 시 직군 상세 화면을 채우는 fallback 원본. 이 파일만으로도 화면이 완결돼야 한다.",
+  "todo_for_p5": [
+    "external_code: Work24 직업정보 API(데이터셋 3071087)의 직업코드로 채운다",
+    "source_url: 각 직업의 워크넷 상세 링크",
+    "snapshot.summary: 2~3문장. 결과 카드 톤앤보이스 금지어를 쓰지 않는다",
+    "source_label: 실제 조회일로 갱신. 출처 없이 화면에 올리지 않는다",
+    "데이터셋별 이용허락 범위를 확인하고 원문 무단 재배포는 하지 않는다"
+  ],
+  "occupations": [
+    {
+      "occupation_id": "J01-01",
+      "job_family_id": "J01",
+      "external_code": null,
+      "name": "프론트엔드 개발",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J01-02",
+      "job_family_id": "J01",
+      "external_code": null,
+      "name": "백엔드 개발",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J01-03",
+      "job_family_id": "J01",
+      "external_code": null,
+      "name": "QA 엔지니어",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J01-04",
+      "job_family_id": "J01",
+      "external_code": null,
+      "name": "데브옵스",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J02-01",
+      "job_family_id": "J02",
+      "external_code": null,
+      "name": "데이터 분석가",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J02-02",
+      "job_family_id": "J02",
+      "external_code": null,
+      "name": "BI 분석가",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J02-03",
+      "job_family_id": "J02",
+      "external_code": null,
+      "name": "리서처",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J02-04",
+      "job_family_id": "J02",
+      "external_code": null,
+      "name": "데이터 엔지니어",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J03-01",
+      "job_family_id": "J03",
+      "external_code": null,
+      "name": "서비스 기획",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J03-02",
+      "job_family_id": "J03",
+      "external_code": null,
+      "name": "프로덕트 매니저",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J03-03",
+      "job_family_id": "J03",
+      "external_code": null,
+      "name": "운영기획",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J03-04",
+      "job_family_id": "J03",
+      "external_code": null,
+      "name": "사업기획",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J04-01",
+      "job_family_id": "J04",
+      "external_code": null,
+      "name": "UX/UI 디자이너",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J04-02",
+      "job_family_id": "J04",
+      "external_code": null,
+      "name": "콘텐츠 기획",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J04-03",
+      "job_family_id": "J04",
+      "external_code": null,
+      "name": "영상 편집",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J04-04",
+      "job_family_id": "J04",
+      "external_code": null,
+      "name": "그래픽 디자이너",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J05-01",
+      "job_family_id": "J05",
+      "external_code": null,
+      "name": "퍼포먼스 마케터",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J05-02",
+      "job_family_id": "J05",
+      "external_code": null,
+      "name": "브랜드 마케터",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J05-03",
+      "job_family_id": "J05",
+      "external_code": null,
+      "name": "CRM 마케터",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J05-04",
+      "job_family_id": "J05",
+      "external_code": null,
+      "name": "콘텐츠 마케터",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J06-01",
+      "job_family_id": "J06",
+      "external_code": null,
+      "name": "B2B 영업",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J06-02",
+      "job_family_id": "J06",
+      "external_code": null,
+      "name": "AE(Account Executive)",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J06-03",
+      "job_family_id": "J06",
+      "external_code": null,
+      "name": "고객성공 매니저",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J06-04",
+      "job_family_id": "J06",
+      "external_code": null,
+      "name": "채널 영업",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J07-01",
+      "job_family_id": "J07",
+      "external_code": null,
+      "name": "인사",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J07-02",
+      "job_family_id": "J07",
+      "external_code": null,
+      "name": "회계",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J07-03",
+      "job_family_id": "J07",
+      "external_code": null,
+      "name": "총무",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J07-04",
+      "job_family_id": "J07",
+      "external_code": null,
+      "name": "운영관리",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J07-05",
+      "job_family_id": "J07",
+      "external_code": null,
+      "name": "구매",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J08-01",
+      "job_family_id": "J08",
+      "external_code": null,
+      "name": "교육기획",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J08-02",
+      "job_family_id": "J08",
+      "external_code": null,
+      "name": "직업상담",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J08-03",
+      "job_family_id": "J08",
+      "external_code": null,
+      "name": "사회복지 관련",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J08-04",
+      "job_family_id": "J08",
+      "external_code": null,
+      "name": "HRD",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    },
+    {
+      "occupation_id": "J08-05",
+      "job_family_id": "J08",
+      "external_code": null,
+      "name": "공공기관 행정",
+      "source_url": null,
+      "source_label": "팀 검수 스냅샷 (Work24 매핑 전)",
+      "snapshot": {
+        "summary": null,
+        "typical_education": null,
+        "note": "P5 조사 필요"
+      }
+    }
+  ]
+}
